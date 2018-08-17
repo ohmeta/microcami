@@ -1,22 +1,18 @@
 INFO:iss.app:Starting iss generate
 INFO:iss.app:Using kde ErrorModel
 INFO:iss.download:Searching for bacteria to download
-INFO:iss.download:Downloading QKCB00000000.1
-WARNING:iss.download:QKCB00000000.1 only contains Ns. Skipping
-INFO:iss.download:Downloading NC_022998.1
-INFO:iss.download:Downloading NC_014759.1
-INFO:iss.download:Downloading QFPJ00000000.1
-WARNING:iss.download:QFPJ00000000.1 only contains Ns. Skipping
-INFO:iss.download:Downloading QAKI00000000.1
-WARNING:iss.download:QAKI00000000.1 only contains Ns. Skipping
-INFO:iss.download:Downloading NC_011146.1
+INFO:iss.download:Downloading NC_017094.1
+INFO:iss.download:Downloading QFPZ00000000.1
+WARNING:iss.download:QFPZ00000000.1 only contains Ns. Skipping
+INFO:iss.download:Downloading NC_007645.1
+INFO:iss.download:Downloading NC_016048.1
 INFO:iss.download:Writing genomes to simulation_genomes.fasta
 INFO:iss.app:Using lognormal abundance distribution
-INFO:iss.app:Using 8 cpus for read generation
+INFO:iss.app:Using 1 cpus for read generation
 INFO:iss.app:Generating 1000000 reads
-INFO:iss.app:Generating reads for record: NC_022998.1
-INFO:iss.app:Generating reads for record: NC_014759.1
-INFO:iss.app:Generating reads for record: NC_011146.1
+INFO:iss.app:Generating reads for record: NC_017094.1
+INFO:iss.app:Generating reads for record: NC_007645.1
+INFO:iss.app:Generating reads for record: NC_016048.1
 INFO:iss.generator:Stitching temporary files together
 INFO:iss.generator:Cleaning up
 INFO:iss.app:Read generation complete

@@ -49,16 +49,19 @@ rule fastp_oa:
     params:
         compression = 6,
         min_length = 51,
-        seed_oa = 30,
-        fragment_oa = 20
+        seed_oa = 10,       # PhedQ 10 equal with 90% accuracy
+        fragment_oa = 7,    # PhedQ  7 equal with 80% accuracy
     shell:
         '''
         ../bin/fastp \
+        --cut_by_OA \
+        --cut_window_size 30 \
+        --cut_OA_seed_quality {params.seed_oa} \
+        --cut_OA_frag_quality {params.fragment_oa} \
         --in1 {input.r1} --in2 {input.r2} \
         --out1 {output.r1} --out2 {output.r2} \
         --compression {params.compression} \
-        --cut_OA_seed_quality {params.seed_oa} \
-        --cut_OA_frag_quality {params.fragment_oa} \
+        --disable_adapter_trimming \
         --length_required {params.min_length} \
         --html {output.html} \
         --json {output.json} 2> {log}
@@ -89,6 +92,7 @@ rule fastp:
         --in1 {input.r1} --in2 {input.r2} \
         --out1 {output.r1} --out2 {output.r2} \
         --compression {params.compression} \
+        --disable_adapter_trimming \
         --cut_mean_quality {params.cut_mean_quality} \
         --length_required {params.min_length} \
         --html {output.html} \
