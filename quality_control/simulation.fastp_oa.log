@@ -1,0 +1,41 @@
+Read1 before filtering:
+total reads: 500000
+total bases: 63000000
+Q20 bases: 60550390(96.1117%)
+Q30 bases: 58151781(92.3044%)
+
+Read1 after filtering:
+total reads: 498040
+total bases: 62752252
+Q20 bases: 60322978(96.1288%)
+Q30 bases: 57937499(92.3274%)
+
+Read2 before filtering:
+total reads: 500000
+total bases: 63000000
+Q20 bases: 59713955(94.7841%)
+Q30 bases: 56829090(90.2049%)
+
+Read2 aftering filtering:
+total reads: 498040
+total bases: 62752252
+Q20 bases: 59571436(94.9312%)
+Q30 bases: 56731036(90.4048%)
+
+Filtering result:
+reads passed filter: 996080
+reads failed due to low quality: 3914
+reads failed due to too many N: 0
+reads failed due to too short: 6
+reads with adapter trimmed: 42
+bases trimmed due to adapters: 2200
+
+Duplication rate: 0.0213079%
+
+Insert size peak (evaluated by paired-end reads): 218
+
+JSON report: simulation.trimmed.fastp_oa.json
+HTML report: simulation.trimmed.fastp_oa.html
+
+../bin/fastp --in1 ../simulation/simulation_1.fq.gz --in2 ../simulation/simulation_2.fq.gz --out1 simulation.trimmed.fastp_oa.1.fq.gz --out2 simulation.trimmed.fastp_oa.2.fq.gz --compression 6 --cut_OA_seed_quality 30 --cut_OA_frag_quality 20 --length_required 51 --html simulation.trimmed.fastp_oa.html --json simulation.trimmed.fastp_oa.json 
+fastp v0.19.4, time used: 15 seconds

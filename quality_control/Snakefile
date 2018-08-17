@@ -1,0 +1,119 @@
+rule all:
+    input:
+        "qc.benchmark.txt"
+
+rule oas1:
+    input:
+        r1 = "../simulation/simulation_1.fq.gz",
+        r2 = "../simulation/simulation_2.fq.gz"
+    output:
+        r1 = "simulation.clean.1.fq.gz",
+        r2 = "simulation.clean.2.fq.gz",
+        rs = "simulation.clean.single.fq.gz",
+        stat_out = "simulation.clean.stat_out"
+    log:
+        "simulation.oas1.log"
+    benchmark:
+        "oas1.benchmark.txt"
+    params:
+        prefix = "simulation",
+        qual_system = 33,
+        min_length = 51,
+        seed_oa = 0.9,
+        fragment_oa = 0.8
+    shell:
+        '''
+        ../bin/OAs1 {input.r1},{input.r2} \
+        {params.prefix} \
+        {params.qual_system} \
+        {params.min_length} \
+        {params.seed_oa} \
+        {params.fragment_oa}
+        '''
+
+rule fastp_oa:
+    input:
+        r1 = "../simulation/simulation_1.fq.gz",
+        r2 = "../simulation/simulation_2.fq.gz"
+    output:
+        r1 = "simulation.trimmed.fastp_oa.1.fq.gz",
+        r2 = "simulation.trimmed.fastp_oa.2.fq.gz",
+        html = "simulation.trimmed.fastp_oa.html",
+        json = "simulation.trimmed.fastp_oa.json"
+    log:
+        "simulation.fastp_oa.log"
+    threads:
+        8
+    benchmark:
+        "fastp_oa.benchmark.txt"
+    params:
+        compression = 6,
+        min_length = 51,
+        seed_oa = 30,
+        fragment_oa = 20
+    shell:
+        '''
+        ../bin/fastp \
+        --in1 {input.r1} --in2 {input.r2} \
+        --out1 {output.r1} --out2 {output.r2} \
+        --compression {params.compression} \
+        --cut_OA_seed_quality {params.seed_oa} \
+        --cut_OA_frag_quality {params.fragment_oa} \
+        --length_required {params.min_length} \
+        --html {output.html} \
+        --json {output.json} 2> {log}
+        '''
+
+rule fastp:
+    input:
+        r1 = "../simulation/simulation_1.fq.gz",
+        r2 = "../simulation/simulation_2.fq.gz"
+    output:
+        r1 = "simulation.trimmed.fastp.1.fq.gz",
+        r2 = "simulation.trimmed.fastp.2.fq.gz",
+        html = "simulation.fastp.html",
+        json = "simulation.fastp.json"
+    log:
+        "simulation.fastp.log"
+    threads:
+        8
+    benchmark:
+        "fastp.benchmark.txt"
+    params:
+        compression = 6,
+        min_length = 51,
+        cut_mean_quality = 20,
+    shell:
+        '''
+        ../bin/fastp \
+        --in1 {input.r1} --in2 {input.r2} \
+        --out1 {output.r1} --out2 {output.r2} \
+        --compression {params.compression} \
+        --cut_mean_quality {params.cut_mean_quality} \
+        --length_required {params.min_length} \
+        --html {output.html} \
+        --json {output.json} 2> {log}
+        '''
+
+rule merge:
+    input:
+        oas1 = "oas1.benchmark.txt",
+        fastp_oa = "fastp_oa.benchmark.txt",
+        fastp = "fastp.benchmark.txt",
+    output:
+        qc = "qc.benchmark.txt"
+    run:
+        import pandas
+        import pprint
+
+        def change(benchmark, method):
+            df = pandas.read_table(benchmark)
+            df.insert(loc=0, column='trimmer', value=[method])
+            return df
+
+        oas1_df = change(input.oas1, "OAs1")
+        fastp_oa_df = change(input.fastp_oa, "fastp_oa")
+        fastp_df = change(input.fastp, "fastp")
+
+        output_df = pandas.concat([oas1_df, fastp_oa_df, fastp_df])
+        output_df.to_csv(output.qc, sep='\t', index=False)
