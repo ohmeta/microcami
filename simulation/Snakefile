@@ -1,0 +1,36 @@
+rule all:
+    input:
+        genome = "simulation_genomes.fasta",
+        r1 = "simulation_1.fq.gz",
+        r2 = "simulation_2.fq.gz",
+        abundance = "simulation_abundance.txt"
+
+rule insillicoseq:
+    output:
+        genome = "simulation_genomes.fasta",
+        r1 = "simulation_1.fq.gz",
+        r2 = "simulation_2.fq.gz",
+        abundance = "simulation_abundance.txt"
+    log:
+        "iss.log"
+    benchmark:
+        "iss.benchmark.txt"
+    params:
+        model = "hiseq",
+        n_genomes = 3,
+        prefix = "simulation"
+    threads:
+        8
+    shell:
+        '''
+        iss generate \
+        --ncbi bacteria \
+        -u {params.n_genomes} \
+        --cpus {threads} \
+        --model {params.model} \
+        --output {params.prefix} 2> {log}
+        pigz simulation_R1.fastq
+        pigz simulation_R2.fastq
+        mv simulation_R1.fastq.gz {output.r1}
+        mv simulation_R2.fastq.gz {output.r2}
+        '''
