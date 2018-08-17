@@ -1,0 +1,4 @@
+simulation/*.fq.gz
+simulation/*.fasta
+
+quality/*.fq.gz
