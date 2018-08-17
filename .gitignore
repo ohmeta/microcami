@@ -1,4 +1,6 @@
 simulation/*.fq.gz
 simulation/*.fasta
+simulation/.snakemake
 
-quality/*.fq.gz
+quality_control/*.fq.gz
+quality_control/.snakemake
