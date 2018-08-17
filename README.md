@@ -1,6 +1,6 @@
 # benchmark for metagenomics tools
-micro + CAMI = microcami
-more than just software testing:)
+micro + CAMI = microcami  
+more than just software testing :)
 
 ```bash
 git clone https://github.com/ohmeta/microcami
