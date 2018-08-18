@@ -1,0 +1,121 @@
+---
+title: "Comparison of OA filter"
+#output: html_notebook
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(plyr)
+
+curat.fun <- function(dat,rawReadNum){
+  max <- ncol(dat) - 6
+  colnames(dat)[-c(2:5)] <- c("pos",seq(0,max))
+  stat <- data.frame(pos=dat$pos)
+  stat$bnum <- rowSums(dat[,2:6])
+  stat$A  <- dat[,"A"]/stat$bnum
+  stat$T  <- dat[,"T"]/stat$bnum
+  stat$C  <- dat[,"C"]/stat$bnum
+  stat$G  <- dat[,"G"]/stat$bnum
+  stat$N  <- dat[,"0"]/stat$bnum
+
+  stat$Q30 <- rowSums(dat[,c(36:ncol(dat))])/rowSums(dat[,c(6:ncol(dat))])
+  stat$Q20 <- rowSums(dat[,c(26:ncol(dat))])/rowSums(dat[,c(6:ncol(dat))])
+  stat$survival <- rowSums(dat[,c(6:ncol(dat))])/rawReadNum
+  mbase <- melt(stat,measure.vars = c("A","T","C","G","N"),id.vars = "pos",
+                variable.name = "base",value.name = "percent")
+  mqual <- melt(stat,measure.vars = c("Q30","Q20"),id.vars = "pos",
+                variable.name = "level",value.name = "percent")
+
+  return(list(dat=dat,stat=stat,base=mbase,qual=mqual))
+}
+```
+
+### Preparation
+
+Tools used: `OAsa` (perl) and `fastp` (c++)
+
+The filter process was set the same by:
+
+common:
+
+ - minimum length= 30bp
+
+OA for OAs1 and fastp OA mode:
+
+ - seed Phed Q = 10 
+
+ > (which means the seed achieve 90% probability to be totally correct.)
+ 
+ - fragment Phed Q = 7 
+
+ > (which means the fragment after trimed should achieve 80% probability to be totally correct.)
+
+ - seed length = 30 bp
+
+> ps: 1 lowest base was tolerented for fragmnet (mostly it would be N; so in other words, the process will ignore no more than 1 N base.)
+
+for fastp trim mode:
+
+ - cut_mean_quality = 20
+
+ - cut by 5' and 3' enabled
+
+the detail are recorded in `Snakemake` configure file.
+
+
+```{r}
+RAW.PQ <- read.table("NEW10BG0.raw.2m.fq.stat",header=T)
+OA.PQ <- read.table("NEW10BG0.cOMG_oa.clean.fq.stat",header=T)
+FO.PQ <- read.table("NEW10BG0.fastp_oa.fq.stat",header=T)
+Ft.PQ <- read.table("NEW10BG0.trimmed.fastp.fq.stat",header=T)
+```
+
+```{r}
+rawReadNum <- 500000
+RAW.stat <- curat.fun(RAW.PQ,rawReadNum)
+OA.stat <- curat.fun(OA.PQ,rawReadNum)
+FO.stat <- curat.fun(FO.PQ,rawReadNum)
+Ft.stat <- curat.fun(Ft.PQ,rawReadNum)
+```
+
+```{r, fig.width=8,fig.height=3}
+comb.stat <- rbind(
+  cbind(tag="RAW",RAW.stat$stat),
+  cbind(tag="OAs1",OA.stat$stat),
+  cbind(tag="fastp_OA",FO.stat$stat),
+  cbind(tag="fastp",Ft.stat$stat))
+
+comb.qual <- rbind(
+  cbind(tag="RAW",RAW.stat$qual),
+  cbind(tag="OAs1",OA.stat$qual),
+  cbind(tag="fastp_OA",FO.stat$qual),
+  cbind(tag="fastp",Ft.stat$qual))
+
+ggplot(comb.qual,aes(x=pos)) + geom_line(aes(y=percent,linetype=level)) +
+  geom_point(aes(y=percent,group=level,color=percent),alpha=.5) +
+  geom_line(data=comb.stat,aes(y=survival),linetype=2,color="red",alpha=.7) +
+  facet_grid(.~tag) +
+  scale_color_gradientn(colors=brewer.pal(n=11,name="Spectral"))
+```
+过滤后的OA方法对整体质量值的提升明显。红色虚线表示过滤后该位置的碱基剩余率。
+
+```{r, fig.width=8,fig.height=3}
+comb.base <- rbind(
+  cbind(tag="RAW",RAW.stat$base),
+  cbind(tag="OAs1",OA.stat$base),
+  cbind(tag="fastp_OA",FO.stat$base),
+  cbind(tag="fastp",Ft.stat$base))
+
+ggplot(comb.base,aes(x=pos,color=base)) + geom_line(aes(y=percent,linetype=base)) +
+  geom_point(aes(y=percent)) + facet_grid(.~tag)
+```
+部分特定碱基位置存在大量的异常低质量比例
+
+  - 因为只取了真实数据的头500k reads，存在共聚特征。
+  
+  - 随后考虑对完整的序列文件进行测试。
+
