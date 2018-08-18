@@ -1,0 +1,116 @@
+rule all:
+    input:
+        "qc.benchmark.txt"
+
+rule OMG_oa:
+    input:
+        r1 = "NEW10BG0.raw.2m.fq.gz",
+    output:
+        r1 = "NEW10BG0.cOMG_oa.clean.fq.gz",
+        stat_out = "NEW10BG0.cOMG_oa.clean.stat_out"
+    log:
+        "NEW10BG0.cOMG_oa.log"
+    benchmark:
+        "OMG_oa.benchmark.txt"
+    params:
+        prefix = "NEW10BG0.cOMG_oa",
+        qual_system = 33,
+        min_length = 30,
+        seed_oa = 10,
+        fragment_oa = 7,
+    shell:
+        '''
+        cOMG OAs1 {input.r1} \
+        {params.prefix} \
+        {params.qual_system} \
+        {params.min_length} \
+        {params.seed_oa} \
+        {params.fragment_oa} 2> {log}
+        '''
+
+rule fastp_oa:
+    input:
+        r1 = "NEW10BG0.raw.2m.fq.gz",
+    output:
+        r1 = "NEW10BG0.fastp_oa.fq.gz",
+        html = "NEW10BG0.trimmed.fastp_oa.html",
+        json = "NEW10BG0.trimmed.fastp_oa.json"
+    log:
+        "NEW10BG0.fastp_oa.log"
+    threads:
+        2
+    benchmark:
+        "fastp_oa.benchmark.txt"
+    params:
+        compression = 6,
+        min_length = 30,
+        seed_oa = 10,       # PhedQ 10 equal with 90% accuracy
+        fragment_oa = 7,    # PhedQ  7 equal with 80% accuracy
+    shell:
+        '''
+        fastp \
+        --cut_by_OA \
+        --cut_window_size 30 \
+        --cut_OA_seed_quality {params.seed_oa} \
+        --cut_OA_frag_quality {params.fragment_oa} \
+        --in1 {input.r1} \
+        --out1 {output.r1} \
+        --compression {params.compression} \
+        --disable_adapter_trimming \
+        --length_required {params.min_length} \
+        --html {output.html} \
+        --json {output.json} 2> {log}
+        '''
+
+rule fastp:
+    input:
+        r1 = "NEW10BG0.raw.2m.fq.gz",
+    output:
+        r1 = "NEW10BG0.trimmed.fastp.fq.gz",
+        html = "NEW10BG0.fastp.html",
+        json = "NEW10BG0.fastp.json"
+    log:
+        "NEW10BG0.fastp.log"
+    threads:
+        2
+    benchmark:
+        "fastp.benchmark.txt"
+    params:
+        compression = 6,
+        min_length = 30,
+        cut_mean_quality = 20,
+    shell:
+        '''
+        fastp \
+        --in1 {input.r1} \
+        --out1 {output.r1} \
+        --compression {params.compression} \
+        --disable_adapter_trimming \
+        --cut_mean_quality {params.cut_mean_quality} \
+        --length_required {params.min_length} \
+        --html {output.html} \
+        --json {output.json} 2> {log}
+        '''
+
+rule merge:
+    input:
+        OMG_oa = "OMG_oa.benchmark.txt",
+        fastp_oa = "fastp_oa.benchmark.txt",
+        fastp = "fastp.benchmark.txt",
+    output:
+        qc = "qc.benchmark.txt"
+    run:
+        import pandas
+        import pprint
+
+        def change(benchmark, method):
+            df = pandas.read_table(benchmark)
+            df.insert(loc=0, column='trimmer', value=[method])
+            return df
+
+        OMG_oa_df = change(input.OMG_oa, "OMG_oa")
+        fastp_oa_df = change(input.fastp_oa, "fastp_oa")
+        fastp_df = change(input.fastp, "fastp")
+
+        output_df = pandas.concat([OMG_oa_df, fastp_oa_df, fastp_df])
+        output_df.to_csv(output.qc, sep='\t', index=False)
