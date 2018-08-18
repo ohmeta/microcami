@@ -72,7 +72,16 @@ RAW.PQ <- read.table("NEW10BG0.raw.2m.fq.stat",header=T)
 OA.PQ <- read.table("NEW10BG0.cOMG_oa.clean.fq.stat",header=T)
 FO.PQ <- read.table("NEW10BG0.fastp_oa.fq.stat",header=T)
 Ft.PQ <- read.table("NEW10BG0.trimmed.fastp.fq.stat",header=T)
+qc.dat <- read.table("qc.benchmark.txt",header=T)
 ```
+
+
+#### Table 1. The comparison of operating efficiency for filter process
+```{r}
+qc.dat
+```
+初步来看，效率上 fastp 的OA模式相比perl 脚本要快**3倍**以上。且在fastp 中，OA模式也比分别过滤并trim要快。
+
 
 ```{r}
 rawReadNum <- 500000
@@ -82,6 +91,8 @@ FO.stat <- curat.fun(FO.PQ,rawReadNum)
 Ft.stat <- curat.fun(Ft.PQ,rawReadNum)
 ```
 
+
+#### Figure 1 Quality distribution before and after filter
 ```{r, fig.width=8,fig.height=3}
 comb.stat <- rbind(
   cbind(tag="RAW",RAW.stat$stat),
@@ -103,6 +114,7 @@ ggplot(comb.qual,aes(x=pos)) + geom_line(aes(y=percent,linetype=level)) +
 ```
 过滤后的OA方法对整体质量值的提升明显。红色虚线表示过滤后该位置的碱基剩余率。
 
+#### Figure 2 GC% distribution before and after filter
 ```{r, fig.width=8,fig.height=3}
 comb.base <- rbind(
   cbind(tag="RAW",RAW.stat$base),
