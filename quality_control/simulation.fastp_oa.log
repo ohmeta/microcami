@@ -5,10 +5,10 @@ Q20 bases: 60537894(96.0923%)
 Q30 bases: 58132037(92.2734%)
 
 Read1 after filtering:
-total reads: 427403
-total bases: 53020717
-Q20 bases: 51872057(97.8336%)
-Q30 bases: 50412590(95.0809%)
+total reads: 427466
+total bases: 53441544
+Q20 bases: 52204955(97.6861%)
+Q30 bases: 50693326(94.8575%)
 
 Read2 before filtering:
 total reads: 499998
@@ -17,23 +17,23 @@ Q20 bases: 59693087(94.7513%)
 Q30 bases: 56795916(90.1526%)
 
 Read2 aftering filtering:
-total reads: 427403
-total bases: 53052801
-Q20 bases: 51890214(97.8086%)
-Q30 bases: 50435749(95.0671%)
+total reads: 427466
+total bases: 53477405
+Q20 bases: 52222311(97.653%)
+Q30 bases: 50713560(94.8318%)
 
 Filtering result:
-reads passed filter: 854806
+reads passed filter: 854932
 reads failed due to low quality: 0
 reads failed due to too many N: 0
-reads failed due to too short: 145190
+reads failed due to too short: 145064
 
 Duplication rate: 0.00483735%
 
-Insert size peak (evaluated by paired-end reads): 125
+Insert size peak (evaluated by paired-end reads): 96
 
 JSON report: simulation.trimmed.fastp_oa.json
 HTML report: simulation.trimmed.fastp_oa.html
 
-../bin/fastp --cut_by_OA --cut_window_size 30 --cut_OA_seed_quality 10 --cut_OA_frag_quality 7 --in1 ../simulation/simulation_1.fq.gz --in2 ../simulation/simulation_2.fq.gz --out1 simulation.trimmed.fastp_oa.1.fq.gz --out2 simulation.trimmed.fastp_oa.2.fq.gz --compression 6 --disable_adapter_trimming --length_required 51 --html simulation.trimmed.fastp_oa.html --json simulation.trimmed.fastp_oa.json 
-fastp v0.19.4, time used: 24 seconds
+fastp --cut_by_OA --cut_window_size 30 --cut_OA_seed_quality 10 --cut_OA_frag_quality 7 --in1 ../simulation/simulation_1.fq.gz --in2 ../simulation/simulation_2.fq.gz --out1 simulation.trimmed.fastp_oa.1.fq.gz --out2 simulation.trimmed.fastp_oa.2.fq.gz --compression 6 --disable_adapter_trimming --length_required 51 --html simulation.trimmed.fastp_oa.html --json simulation.trimmed.fastp_oa.json 
+fastp v0.19.4, time used: 27 seconds

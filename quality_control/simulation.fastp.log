@@ -32,10 +32,10 @@ reads failed due to too short: 0
 
 Duplication rate: 0.00483735%
 
-Insert size peak (evaluated by paired-end reads): 148
+Insert size peak (evaluated by paired-end reads): 56
 
 JSON report: simulation.fastp.json
 HTML report: simulation.fastp.html
 
-../bin/fastp --in1 ../simulation/simulation_1.fq.gz --in2 ../simulation/simulation_2.fq.gz --out1 simulation.trimmed.fastp.1.fq.gz --out2 simulation.trimmed.fastp.2.fq.gz --compression 6 --disable_adapter_trimming --cut_mean_quality 20 --length_required 51 --html simulation.fastp.html --json simulation.fastp.json 
-fastp v0.19.4, time used: 30 seconds
+fastp --in1 ../simulation/simulation_1.fq.gz --in2 ../simulation/simulation_2.fq.gz --out1 simulation.trimmed.fastp.1.fq.gz --out2 simulation.trimmed.fastp.2.fq.gz --compression 6 --disable_adapter_trimming --cut_mean_quality 20 --length_required 51 --html simulation.fastp.html --json simulation.fastp.json 
+fastp v0.19.4, time used: 32 seconds
