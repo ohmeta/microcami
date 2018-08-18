@@ -33,9 +33,11 @@ for fastp trim mode:
 the detail are recorded in `Snakemake` configure file.
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+
 过滤后的OA方法对整体质量值的提升明显。红色虚线表示过滤后该位置的碱基剩余率。
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+
 部分特定碱基位置存在大量的异常低质量比例
 
 -   因为只取了真实数据的头500k reads，存在共聚特征。
