@@ -86,6 +86,7 @@ rule fastp:
         --out1 {output.r1} \
         --compression {params.compression} \
         --disable_adapter_trimming \
+        --cut_by_quality5 --cut_by_quality3 \
         --cut_mean_quality {params.cut_mean_quality} \
         --length_required {params.min_length} \
         --html {output.html} \
