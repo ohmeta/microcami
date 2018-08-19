@@ -2,28 +2,25 @@ rule all:
     input:
         "qc.benchmark.txt"
 
-rule oas1:
+rule OMG_oa:
     input:
-        r1 = "../simulation/simulation_1.fq.gz",
-        r2 = "../simulation/simulation_2.fq.gz"
+        r1 = "NEW10BG0.raw.2m.fq.gz",
     output:
-        r1 = "simulation.clean.1.fq.gz",
-        r2 = "simulation.clean.2.fq.gz",
-        rs = "simulation.clean.single.fq.gz",
-        stat_out = "simulation.clean.stat_out"
+        r1 = "NEW10BG0.cOMG_oa.clean.fq.gz",
+        stat_out = "NEW10BG0.cOMG_oa.clean.stat_out"
     log:
-        "simulation.oas1.log"
+        "NEW10BG0.cOMG_oa.log"
     benchmark:
-        "oas1.benchmark.txt"
+        "OMG_oa.benchmark.txt"
     params:
-        prefix = "simulation",
+        prefix = "NEW10BG0.cOMG_oa",
         qual_system = 33,
-        min_length = 51,
+        min_length = 30,
         seed_oa = 10,
         fragment_oa = 7,
     shell:
         '''
-        cOMG OAs1 {input.r1},{input.r2} \
+        cOMG OAs1 {input.r1} \
         {params.prefix} \
         {params.qual_system} \
         {params.min_length} \
@@ -33,22 +30,20 @@ rule oas1:
 
 rule fastp_oa:
     input:
-        r1 = "../simulation/simulation_1.fq.gz",
-        r2 = "../simulation/simulation_2.fq.gz"
+        r1 = "NEW10BG0.raw.2m.fq.gz",
     output:
-        r1 = "simulation.trimmed.fastp_oa.1.fq.gz",
-        r2 = "simulation.trimmed.fastp_oa.2.fq.gz",
-        html = "simulation.trimmed.fastp_oa.html",
-        json = "simulation.trimmed.fastp_oa.json"
+        r1 = "NEW10BG0.fastp_oa.fq.gz",
+        html = "NEW10BG0.trimmed.fastp_oa.html",
+        json = "NEW10BG0.trimmed.fastp_oa.json"
     log:
-        "simulation.fastp_oa.log"
+        "NEW10BG0.fastp_oa.log"
     threads:
         2
     benchmark:
         "fastp_oa.benchmark.txt"
     params:
         compression = 6,
-        min_length = 51,
+        min_length = 30,
         seed_oa = 10,       # PhedQ 10 equal with 90% accuracy
         fragment_oa = 7,    # PhedQ  7 equal with 80% accuracy
     shell:
@@ -58,8 +53,8 @@ rule fastp_oa:
         --cut_window_size 30 \
         --cut_OA_seed_quality {params.seed_oa} \
         --cut_OA_frag_quality {params.fragment_oa} \
-        --in1 {input.r1} --in2 {input.r2} \
-        --out1 {output.r1} --out2 {output.r2} \
+        --in1 {input.r1} \
+        --out1 {output.r1} \
         --compression {params.compression} \
         --disable_adapter_trimming \
         --length_required {params.min_length} \
@@ -69,30 +64,29 @@ rule fastp_oa:
 
 rule fastp:
     input:
-        r1 = "../simulation/simulation_1.fq.gz",
-        r2 = "../simulation/simulation_2.fq.gz"
+        r1 = "NEW10BG0.raw.2m.fq.gz",
     output:
-        r1 = "simulation.trimmed.fastp.1.fq.gz",
-        r2 = "simulation.trimmed.fastp.2.fq.gz",
-        html = "simulation.fastp.html",
-        json = "simulation.fastp.json"
+        r1 = "NEW10BG0.trimmed.fastp.fq.gz",
+        html = "NEW10BG0.fastp.html",
+        json = "NEW10BG0.fastp.json"
     log:
-        "simulation.fastp.log"
+        "NEW10BG0.fastp.log"
     threads:
         2
     benchmark:
         "fastp.benchmark.txt"
     params:
         compression = 6,
-        min_length = 51,
+        min_length = 30,
         cut_mean_quality = 20,
     shell:
         '''
         fastp \
-        --in1 {input.r1} --in2 {input.r2} \
-        --out1 {output.r1} --out2 {output.r2} \
+        --in1 {input.r1} \
+        --out1 {output.r1} \
         --compression {params.compression} \
         --disable_adapter_trimming \
+        --cut_by_quality5 --cut_by_quality3 \
         --cut_mean_quality {params.cut_mean_quality} \
         --length_required {params.min_length} \
         --html {output.html} \
@@ -101,7 +95,7 @@ rule fastp:
 
 rule merge:
     input:
-        oas1 = "oas1.benchmark.txt",
+        OMG_oa = "OMG_oa.benchmark.txt",
         fastp_oa = "fastp_oa.benchmark.txt",
         fastp = "fastp.benchmark.txt",
     output:
@@ -115,9 +109,9 @@ rule merge:
             df.insert(loc=0, column='trimmer', value=[method])
             return df
 
-        oas1_df = change(input.oas1, "OAs1")
+        OMG_oa_df = change(input.OMG_oa, "OMG_oa")
         fastp_oa_df = change(input.fastp_oa, "fastp_oa")
         fastp_df = change(input.fastp, "fastp")
 
-        output_df = pandas.concat([oas1_df, fastp_oa_df, fastp_df])
+        output_df = pandas.concat([OMG_oa_df, fastp_oa_df, fastp_df])
         output_df.to_csv(output.qc, sep='\t', index=False)
