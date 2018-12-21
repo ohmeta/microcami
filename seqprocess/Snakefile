@@ -3,13 +3,19 @@ from snakemake.utils import min_version
 
 min_version("5.0")
 
-sample = "CL100076083"
+SAMPLES = "CL100076083"
 
 rule all:
     input:
-        expand("{sample}_sub0.05_r{num}.fq.gz",
-               sample=sample,
-               num=["1", "2"])
+        expand(["{sample}_sub0.05_r{num}.fq.gz",
+                "{sample}_sub0.05_{sort}_r{num}.fq.gz",
+                "benchmark/{sample}_gnusort.benchmark.txt",
+                "benchmark/{sample}_gnusort_parallel.benchmark.txt",
+                "benchmark/{sample}_msort.benchmark.txt",
+                "benchmark/sort.benchmark.txt"],
+                sample=SAMPLES,
+                sort=["gnusort", "gnusortp", "msort"],
+                num=["1", "2"])
 
 rule seqtk_sample:
     input:
@@ -34,3 +40,95 @@ rule seqtk_sample:
         seqtk sample -s {params.seed} {input[1]} {params.frac} | \
         pigz -c -p {threads} > {output[1]} 2>> {log}
         '''
+
+rule gnu_sort:
+    input:
+        rules.seqtk_sample.output
+    output:
+        "{sample}_sub0.05_gnusort_r1.fq.gz",
+        "{sample}_sub0.05_gnusort_r2.fq.gz"
+    log:
+        "logs/sort/{sample}_gnusort.log"
+    params:
+        tmp = "./temp_sort"
+    benchmark:
+        "benchmark/{sample}_gnusort.benchmark.txt"
+    threads:
+        8
+    shell:
+        '''
+        pigz -p {threads} -dc {input[0]} | paste - - - - | \
+        sort -T {params.tmp} -k2,2 -t "/" | \
+        tr "\t"  "\n" | pigz -p {threads} > {output[0]} 2> {log}
+
+        pigz -p {threads} -dc {input[1]} | paste - - - - | \
+        sort -T {params.tmp} -k2,2 -t "/" | \
+        tr "\t"  "\n" | pigz -p {threads} > {output[1]} 2>> {log}
+        '''
+
+rule gnu_sort_parallel:
+    input:
+        rules.seqtk_sample.output
+    output:
+        "{sample}_sub0.05_gnusortp_r1.fq.gz",
+        "{sample}_sub0.05_gnusortp_r2.fq.gz"
+    log:
+        "logs/sort/{sample}_gnusort_parallel.log"
+    params:
+        tmp = "./temp_sortp",
+        buffer_size= "1G"
+    benchmark:
+        "benchmark/{sample}_gnusort_parallel.benchmark.txt"
+    threads:
+        8
+    shell:
+        '''
+        pigz -p {threads} -dc {input[0]} | paste - - - - | \
+        sort -T {params.tmp} --parallel={threads} -S {params.buffer_size} -k2,2 -t "/" | \
+        tr "\t"  "\n" | pigz -p {threads} > {output[0]} 2> {log}
+
+        pigz -p {threads} -dc {input[1]} | paste - - - - | \
+        sort -T {params.tmp} --parallel={threads} -S {params.buffer_size} -k2,2 -t "/" | \
+        tr "\t"  "\n" | pigz -p {threads} > {output[1]} 2>> {log}
+        '''
+
+rule msort:
+    input:
+        rules.seqtk_sample.output
+    output:
+        "{sample}_sub0.05_msort_r1.fq.gz",
+        "{sample}_sub0.05_msort_r2.fq.gz"
+    log:
+        "logs/sort/{sample}_msort.log"
+    benchmark:
+        "benchmark/{sample}_msort.benchmark.txt"
+    shell:
+        '''
+        # pigz -p {threads} -dc {input[0]} | msort -t "/_" -L 4 -k 'n3,n4,n5,n2' | pigz -p {threads} > {output[0]}
+        # pigz -p {threads} -dc {input[1]} | msort -t "/_" -L 4 -k 'n3,n4,n5,n2' | pigz -p {threads} > {output[1]}
+        pigz -p {threads} -dc {input[0]} | msort -t "/" -L 4 -k 'm2' | pigz -p {threads} > {output[0]} 2> {log}
+        pigz -p {threads} -dc {input[1]} | msort -t "/" -L 4 -k 'm2' | pigz -p {threads} > {output[1]} 2>> {log}
+        '''
+
+rule merge:
+    input:
+        expand(["benchmark/{sample}_gnusort.benchmark.txt",
+                "benchmark/{sample}_gnusort_parallel.benchmark.txt",
+                "benchmark/{sample}_msort.benchmark.txt"],
+                sample=SAMPLES)
+    output:
+        sort = "benchmark/sort.benchmark.txt"
+    run:
+        import pandas
+
+        def change(benchmark, method):
+            df = pandas.read_table(benchmark)
+            df.insert(loc=0, column='sorter', value=[method])
+            return df
+
+        gnu_sort_df = change(input[0], "gnu_sort")
+        gnu_sortp_df = change(input[1], "gnu_sort_parallel")
+        msort_df = change(input[2], "msort")
+
+        output_df = pandas.concat([gnu_sort_df, gnu_sortp_df, msort_df])
+        output_df.to_csv(output.sort, sep='\t', index=False)
