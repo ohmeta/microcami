@@ -1,0 +1,36 @@
+#!/usr/bin/env snakemake
+from snakemake.utils import min_version
+
+min_version("5.0")
+
+sample = "CL100076083"
+
+rule all:
+    input:
+        expand("{sample}_sub0.05_r{num}.fq.gz",
+               sample=sample,
+               num=["1", "2"])
+
+rule seqtk_sample:
+    input:
+        "{sample}_L01.striped.fastp.1.fq.gz",
+        "{sample}_L01.striped.fastp.2.fq.gz"
+    output:
+        "{sample}_sub0.05_r1.fq.gz",
+        "{sample}_sub0.05_r2.fq.gz"
+    log:
+        "logs/seqtk_sample/{sample}.log"
+    params:
+        seed = 2018,
+        frac = 0.05
+    threads:
+        8
+    benchmark:
+        "benchmark/{sample}_seqtk_sample_0.05.benchmark.txt"
+    shell:
+        '''
+        seqtk sample -s {params.seed} {input[0]} {params.frac} | \
+        pigz -c -p {threads} > {output[0]} 2> {log}
+        seqtk sample -s {params.seed} {input[1]} {params.frac} | \
+        pigz -c -p {threads} > {output[1]} 2>> {log}
+        '''
