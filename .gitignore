@@ -4,3 +4,8 @@ simulation/.snakemake
 
 quality_control/*.fq.gz
 quality_control/.snakemake
+
+simulation/.ipynb_checkpoints/
+assembly/spades_test
+normalization/ecoli_*
+normalization/.ipynb_checkpoints/
