@@ -1,0 +1,184 @@
+Settings:
+  Output files: "/ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_bowtie2_index.*.bt2"
+  Line rate: 6 (line is 64 bytes)
+  Lines per side: 1 (side is 64 bytes)
+  Offset rate: 4 (one in 16)
+  FTable chars: 10
+  Strings: unpacked
+  Max bucket size: default
+  Max bucket size, sqrt multiplier: default
+  Max bucket size, len divisor: 4
+  Difference-cover sample period: 1024
+  Endianness: little
+  Actual local endianness: little
+  Sanity checking: disabled
+  Assertions: disabled
+  Random seed: 0
+  Sizeofs: void*:8, int:4, long:8, size_t:8
+Input files DNA, FASTA:
+  /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_custom_chocophlan_database.ffn
+Reading reference sizes
+  Time reading reference sizes: 00:00:00
+Calculating joined length
+Writing header
+Reserving space for joined string
+Joining reference sequences
+  Time to join reference sequences: 00:00:01
+bmax according to bmaxDivN setting: 3743478
+Using parameters --bmax 2807609 --dcv 1024
+  Doing ahead-of-time memory usage test
+  Passed!  Constructing with these parameters: --bmax 2807609 --dcv 1024
+Constructing suffix-array element generator
+Building DifferenceCoverSample
+  Building sPrime
+  Building sPrimeOrder
+  V-Sorting samples
+  V-Sorting samples time: 00:00:00
+  Allocating rank array
+  Ranking v-sort output
+  Ranking v-sort output time: 00:00:00
+  Invoking Larsson-Sadakane on ranks
+  Invoking Larsson-Sadakane on ranks time: 00:00:00
+  Sanity-checking and returning
+Building samples
+Reserving space for 12 sample suffixes
+Generating random suffixes
+QSorting 12 sample offsets, eliminating duplicates
+QSorting sample offsets, eliminating duplicates time: 00:00:00
+Multikey QSorting 12 samples
+  (Using difference cover)
+  Multikey QSorting samples time: 00:00:00
+Calculating bucket sizes
+Splitting and merging
+  Splitting and merging time: 00:00:00
+Avg bucket size: 1.49739e+07 (target: 2807608)
+Converting suffix-array elements to index image
+Allocating ftab, absorbFtab
+Entering Ebwt loop
+Getting block 1 of 1
+  No samples; assembling all-inclusive block
+  Sorting block of length 14973914 for bucket 1
+  (Using difference cover)
+  Sorting block time: 00:00:06
+Returning block of 14973915 for bucket 1
+Exited Ebwt loop
+fchr[A]: 0
+fchr[C]: 4534963
+fchr[G]: 7414922
+fchr[T]: 10951099
+fchr[$]: 14973914
+Exiting Ebwt::buildToDisk()
+Returning from initFromVector
+Wrote 11370378 bytes to primary EBWT file: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_bowtie2_index.1.bt2
+Wrote 3743484 bytes to secondary EBWT file: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_bowtie2_index.2.bt2
+Re-opening _in1 and _in2 as input streams
+Returning from Ebwt constructor
+Headers:
+    len: 14973914
+    bwtLen: 14973915
+    sz: 3743479
+    bwtSz: 3743479
+    lineRate: 6
+    offRate: 4
+    offMask: 0xfffffff0
+    ftabChars: 10
+    eftabLen: 20
+    eftabSz: 80
+    ftabLen: 1048577
+    ftabSz: 4194308
+    offsLen: 935870
+    offsSz: 3743480
+    lineSz: 64
+    sideSz: 64
+    sideBwtSz: 48
+    sideBwtLen: 192
+    numSides: 77990
+    numLines: 77990
+    ebwtTotLen: 4991360
+    ebwtTotSz: 4991360
+    color: 0
+    reverse: 0
+Total time for call to driver() for forward index: 00:00:10
+Reading reference sizes
+  Time reading reference sizes: 00:00:00
+Calculating joined length
+Writing header
+Reserving space for joined string
+Joining reference sequences
+  Time to join reference sequences: 00:00:00
+  Time to reverse reference sequence: 00:00:00
+bmax according to bmaxDivN setting: 3743478
+Using parameters --bmax 2807609 --dcv 1024
+  Doing ahead-of-time memory usage test
+  Passed!  Constructing with these parameters: --bmax 2807609 --dcv 1024
+Constructing suffix-array element generator
+Building DifferenceCoverSample
+  Building sPrime
+  Building sPrimeOrder
+  V-Sorting samples
+  V-Sorting samples time: 00:00:00
+  Allocating rank array
+  Ranking v-sort output
+  Ranking v-sort output time: 00:00:01
+  Invoking Larsson-Sadakane on ranks
+  Invoking Larsson-Sadakane on ranks time: 00:00:00
+  Sanity-checking and returning
+Building samples
+Reserving space for 12 sample suffixes
+Generating random suffixes
+QSorting 12 sample offsets, eliminating duplicates
+QSorting sample offsets, eliminating duplicates time: 00:00:00
+Multikey QSorting 12 samples
+  (Using difference cover)
+  Multikey QSorting samples time: 00:00:00
+Calculating bucket sizes
+Splitting and merging
+  Splitting and merging time: 00:00:00
+Avg bucket size: 1.49739e+07 (target: 2807608)
+Converting suffix-array elements to index image
+Allocating ftab, absorbFtab
+Entering Ebwt loop
+Getting block 1 of 1
+  No samples; assembling all-inclusive block
+  Sorting block of length 14973914 for bucket 1
+  (Using difference cover)
+  Sorting block time: 00:00:06
+Returning block of 14973915 for bucket 1
+Exited Ebwt loop
+fchr[A]: 0
+fchr[C]: 4534963
+fchr[G]: 7414922
+fchr[T]: 10951099
+fchr[$]: 14973914
+Exiting Ebwt::buildToDisk()
+Returning from initFromVector
+Wrote 11370378 bytes to primary EBWT file: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_bowtie2_index.rev.1.bt2
+Wrote 3743484 bytes to secondary EBWT file: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_bowtie2_index.rev.2.bt2
+Re-opening _in1 and _in2 as input streams
+Returning from Ebwt constructor
+Headers:
+    len: 14973914
+    bwtLen: 14973915
+    sz: 3743479
+    bwtSz: 3743479
+    lineRate: 6
+    offRate: 4
+    offMask: 0xfffffff0
+    ftabChars: 10
+    eftabLen: 20
+    eftabSz: 80
+    ftabLen: 1048577
+    ftabSz: 4194308
+    offsLen: 935870
+    offsSz: 3743480
+    lineSz: 64
+    sideSz: 64
+    sideBwtSz: 48
+    sideBwtLen: 192
+    numSides: 77990
+    numLines: 77990
+    ebwtTotLen: 4991360
+    ebwtTotSz: 4991360
+    color: 0
+    reverse: 1
+Total time for backward call to driver() for mirror index: 00:00:09

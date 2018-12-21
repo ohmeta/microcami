@@ -1,0 +1,279 @@
+11/20/2018 03:35:13 PM - humann2.humann2 - INFO: Running humann2 v0.11.2
+11/20/2018 03:35:13 PM - humann2.humann2 - INFO: Output files will be written to: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2
+11/20/2018 03:35:13 PM - humann2.humann2 - INFO: Writing temp files to directory: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp
+11/20/2018 03:35:13 PM - humann2.utilities - INFO: File ( /ldfssz1/ST_META/share/User/zhujie/toolkit/humann2/examples/demo.fastq ) is of format:  fastq
+11/20/2018 03:35:13 PM - humann2.utilities - DEBUG: Check software, bowtie2, for required version, 2.2
+11/20/2018 03:35:14 PM - humann2.utilities - INFO: Using bowtie2 version 2.3
+11/20/2018 03:35:14 PM - humann2.humann2 - INFO: Search mode set to uniref90 because a uniref90 translated search database is selected
+11/20/2018 03:35:14 PM - humann2.utilities - DEBUG: Check software, diamond, for required version, 0.8.22
+11/20/2018 03:35:14 PM - humann2.utilities - INFO: Using diamond version 0.8.36
+11/20/2018 03:35:14 PM - humann2.config - INFO: 
+Run config settings: 
+
+DATABASE SETTINGS
+nucleotide database folder = /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/chocophlan_DEMO
+protein database folder = /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/uniref_DEMO
+pathways database file 1 = /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/pathways/metacyc_reactions_level4ec_only.uniref.bz2
+pathways database file 2 = /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/pathways/metacyc_pathways_structured_filtered
+utility mapping database folder = /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/misc
+
+RUN MODES
+resume = False
+verbose = False
+bypass prescreen = False
+bypass nucleotide index = False
+bypass nucleotide search = False
+bypass translated search = False
+translated search = diamond
+pick frames = off
+threads = 1
+
+SEARCH MODE
+search mode = uniref90
+identity threshold = 90.0
+
+ALIGNMENT SETTINGS
+evalue threshold = 1.0
+prescreen threshold = 0.01
+translated subject coverage threshold = 50.0
+translated query coverage threshold = 90.0
+
+PATHWAYS SETTINGS
+minpath = on
+xipe = off
+gap fill = on
+
+INPUT AND OUTPUT FORMATS
+input file format = fastq
+output file format = tsv
+output max decimals = 10
+remove stratified output = False
+remove column description output = False
+log level = DEBUG
+
+11/20/2018 03:35:14 PM - humann2.store - DEBUG: Initialize Alignments class instance to minimize memory use
+11/20/2018 03:35:14 PM - humann2.store - DEBUG: Initialize Reads class instance to minimize memory use
+11/20/2018 03:35:25 PM - humann2.humann2 - INFO: Load pathways database part 1: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/pathways/metacyc_reactions_level4ec_only.uniref.bz2
+11/20/2018 03:35:44 PM - humann2.humann2 - INFO: Load pathways database part 2: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/pathways/metacyc_pathways_structured_filtered
+11/20/2018 03:35:44 PM - humann2.search.prescreen - INFO: Running metaphlan2.py ........
+11/20/2018 03:35:44 PM - humann2.utilities - DEBUG: Using software: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/metaphlan2.py
+11/20/2018 03:35:44 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/metaphlan2.py /ldfssz1/ST_META/share/User/zhujie/toolkit/humann2/examples/demo.fastq -t rel_ab -o /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_metaphlan_bugs_list.tsv --input_type multifastq --bowtie2out /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_metaphlan_bowtie2.txt
+11/20/2018 03:37:56 PM - humann2.utilities - DEBUG: Help message for read_fastx.py
+
+11/20/2018 03:37:56 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	prescreen 	:	 131	 seconds
+11/20/2018 03:37:56 PM - humann2.search.prescreen - INFO: Found g__Bacteroides.s__Bacteroides_dorei : 59.40% of mapped reads
+11/20/2018 03:37:56 PM - humann2.search.prescreen - INFO: Found g__Bacteroides.s__Bacteroides_vulgatus : 40.60% of mapped reads
+11/20/2018 03:37:56 PM - humann2.search.prescreen - INFO: Total species selected from prescreen: 2
+11/20/2018 03:37:56 PM - humann2.search.prescreen - DEBUG: Adding file to database: g__Bacteroides.s__Bacteroides_dorei.centroids.v0.1.1.ffn.gz
+11/20/2018 03:37:56 PM - humann2.search.prescreen - DEBUG: Adding file to database: g__Bacteroides.s__Bacteroides_vulgatus.centroids.v0.1.1.ffn.gz
+11/20/2018 03:37:56 PM - humann2.search.prescreen - INFO: Creating custom ChocoPhlAn database ........
+11/20/2018 03:37:56 PM - humann2.utilities - DEBUG: Using software: /bin/gunzip
+11/20/2018 03:37:56 PM - humann2.utilities - INFO: Execute command: /bin/gunzip -c /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/chocophlan_DEMO/g__Bacteroides.s__Bacteroides_dorei.centroids.v0.1.1.ffn.gz /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/chocophlan_DEMO/g__Bacteroides.s__Bacteroides_vulgatus.centroids.v0.1.1.ffn.gz
+11/20/2018 03:37:56 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	custom database creation 	:	 0	 seconds
+11/20/2018 03:37:56 PM - humann2.search.nucleotide - INFO: Running bowtie2-build ........
+11/20/2018 03:37:56 PM - humann2.utilities - DEBUG: Using software: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/bowtie2-build
+11/20/2018 03:37:56 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/bowtie2-build -f /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_custom_chocophlan_database.ffn /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_bowtie2_index
+11/20/2018 03:38:14 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	database index 	:	 18	 seconds
+11/20/2018 03:38:14 PM - humann2.search.nucleotide - DEBUG: Nucleotide input file is of type: fastq
+11/20/2018 03:38:14 PM - humann2.utilities - DEBUG: Using software: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/bowtie2
+11/20/2018 03:38:14 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/bowtie2 -q -x /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_bowtie2_index -U /ldfssz1/ST_META/share/User/zhujie/toolkit/humann2/examples/demo.fastq -S /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_bowtie2_aligned.sam --very-sensitive
+11/20/2018 03:38:18 PM - humann2.utilities - DEBUG: 21000 reads; of these:
+  21000 (100.00%) were unpaired; of these:
+    4655 (22.17%) aligned 0 times
+    6018 (28.66%) aligned exactly 1 time
+    10327 (49.18%) aligned >1 times
+77.83% overall alignment rate
+
+11/20/2018 03:38:18 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	nucleotide alignment 	:	 5	 seconds
+11/20/2018 03:38:19 PM - humann2.search.nucleotide - DEBUG: Total nucleotide alignments not included based on small percent identities: 189
+11/20/2018 03:38:19 PM - humann2.search.nucleotide - DEBUG: Keeping sam file
+11/20/2018 03:38:19 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	nucleotide alignment post-processing 	:	 1	 seconds
+11/20/2018 03:38:19 PM - humann2.humann2 - INFO: Total bugs from nucleotide alignment: 2
+11/20/2018 03:38:19 PM - humann2.humann2 - INFO: 
+g__Bacteroides.s__Bacteroides_vulgatus: 7336 hits
+g__Bacteroides.s__Bacteroides_dorei: 8820 hits
+11/20/2018 03:38:19 PM - humann2.humann2 - INFO: Total gene families from nucleotide alignment: 3685
+11/20/2018 03:38:19 PM - humann2.humann2 - INFO: Unaligned reads after nucleotide alignment: 23.0666666667 %
+11/20/2018 03:38:19 PM - humann2.search.translated - INFO: Running diamond ........
+11/20/2018 03:38:19 PM - humann2.search.translated - INFO: Aligning to reference database: uniref90_demo_prots.dmnd
+11/20/2018 03:38:19 PM - humann2.utilities - DEBUG: Remove file: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/diamond_m8_wbzBgr
+11/20/2018 03:38:19 PM - humann2.utilities - DEBUG: Using software: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/diamond
+11/20/2018 03:38:19 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/diamond blastx --query /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/demo_bowtie2_unaligned.fa --evalue 1.0 --threads 1 --max-target-seqs 20 --outfmt 6 --db /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/uniref_DEMO/uniref90_demo_prots --out /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/diamond_m8_wbzBgr --tmpdir /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: diamond v0.8.36.98 | by Benjamin Buchfink <buchfink@gmail.com>
+Check http://github.com/bbuchfink/diamond for updates.
+
+#CPU threads: 1
+Scoring parameters: (Matrix=BLOSUM62 Lambda=0.267 K=0.041 Penalties=11/1)
+#Target sequences to report alignments for: 20
+Temporary directory: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo
+Opening the database...  [0.037257s]
+Opening the input file...  [0.002503s]
+Opening the output file...  [0.000979s]
+Loading query sequences...  [0.014044s]
+Running complexity filter...  [0.229782s]
+Building query histograms...  [0.009365s]
+Allocating buffers...  [5.9e-05s]
+Loading reference sequences...  [0.000146s]
+Building reference histograms...  [0.000828s]
+Allocating buffers...  [4.2e-05s]
+Initializing temporary storage...  [0.041945s]
+Processing query chunk 0, reference chunk 0, shape 0, index chunk 0.
+Building reference index...  [0.001219s]
+Building query index...  [0.012522s]
+Building seed filter...  [0.001144s]
+Searching alignments...  [0.007499s]
+Processing query chunk 0, reference chunk 0, shape 0, index chunk 1.
+Building reference index...  [0.001099s]
+Building query index...  [0.013541s]
+Building seed filter...  [0.001102s]
+Searching alignments...  [0.00286s]
+Processing query chunk 0, reference chunk 0, shape 0, index chunk 2.
+Building reference index...  [0.001108s]
+Building query index...  [0.014035s]
+Building seed filter...  [0.001102s]
+Searching alignments...  [0.002796s]
+Processing query chunk 0, reference chunk 0, shape 0, index chunk 3.
+Building reference index...  [0.000941s]
+Building query index...  [0.011661s]
+Building seed filter...  [0.001083s]
+Searching alignments...  [0.002769s]
+Processing query chunk 0, reference chunk 0, shape 1, index chunk 0.
+Building reference index...  [0.000926s]
+Building query index...  [0.009911s]
+Building seed filter...  [0.000988s]
+Searching alignments...  [0.003217s]
+Processing query chunk 0, reference chunk 0, shape 1, index chunk 1.
+Building reference index...  [0.001128s]
+Building query index...  [0.011399s]
+Building seed filter...  [0.000986s]
+Searching alignments...  [0.002405s]
+Processing query chunk 0, reference chunk 0, shape 1, index chunk 2.
+Building reference index...  [0.001134s]
+Building query index...  [0.01191s]
+Building seed filter...  [0.001044s]
+Searching alignments...  [0.003154s]
+Processing query chunk 0, reference chunk 0, shape 1, index chunk 3.
+Building reference index...  [0.001027s]
+Building query index...  [0.009985s]
+Building seed filter...  [0.000989s]
+Searching alignments...  [0.002646s]
+Processing query chunk 0, reference chunk 0, shape 2, index chunk 0.
+Building reference index...  [0.001021s]
+Building query index...  [0.007503s]
+Building seed filter...  [0.000796s]
+Searching alignments...  [0.002012s]
+Processing query chunk 0, reference chunk 0, shape 2, index chunk 1.
+Building reference index...  [0.001109s]
+Building query index...  [0.008597s]
+Building seed filter...  [0.000787s]
+Searching alignments...  [0.002055s]
+Processing query chunk 0, reference chunk 0, shape 2, index chunk 2.
+Building reference index...  [0.001094s]
+Building query index...  [0.00891s]
+Building seed filter...  [0.000772s]
+Searching alignments...  [0.002139s]
+Processing query chunk 0, reference chunk 0, shape 2, index chunk 3.
+Building reference index...  [0.000934s]
+Building query index...  [0.007429s]
+Building seed filter...  [0.000771s]
+Searching alignments...  [0.002156s]
+Processing query chunk 0, reference chunk 0, shape 3, index chunk 0.
+Building reference index...  [0.000938s]
+Building query index...  [0.007031s]
+Building seed filter...  [0.000693s]
+Searching alignments...  [0.001789s]
+Processing query chunk 0, reference chunk 0, shape 3, index chunk 1.
+Building reference index...  [0.001059s]
+Building query index...  [0.007191s]
+Building seed filter...  [0.000682s]
+Searching alignments...  [0.001929s]
+Processing query chunk 0, reference chunk 0, shape 3, index chunk 2.
+Building reference index...  [0.001071s]
+Building query index...  [0.007463s]
+Building seed filter...  [0.000667s]
+Searching alignments...  [0.001913s]
+Processing query chunk 0, reference chunk 0, shape 3, index chunk 3.
+Building reference index...  [0.000915s]
+Building query index...  [0.006239s]
+Building seed filter...  [0.000664s]
+Searching alignments...  [0.002012s]
+Deallocating buffers...  [1.6e-05s]
+Computing alignments...  [0.063425s]
+Deallocating reference...  [3.2e-05s]
+Loading reference sequences...  [2.2e-05s]
+Deallocating buffers...  [1.4e-05s]
+Deallocating queries...  [0.000298s]
+Loading query sequences...  [6.9e-05s]
+Closing the input file...  [0.000728s]
+Closing the output file...  [0.001382s]
+Closing the database file...  [0.000345s]
+Total time = 0.641268s
+Reported 1005 pairwise alignments, 1005 HSSPs.
+972 queries aligned.
+
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Using software: /ldfssz1/ST_META/share/User/zhujie/bioenv/bin/cat
+11/20/2018 03:38:20 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/bin/cat /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/diamond_m8_wbzBgr
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	translated alignment 	:	 1	 seconds
+11/20/2018 03:38:20 PM - humann2.search.blastx_coverage - INFO: Total alignments without coverage information: 0
+11/20/2018 03:38:20 PM - humann2.search.blastx_coverage - INFO: Total proteins in blastx output: 43
+11/20/2018 03:38:20 PM - humann2.search.blastx_coverage - INFO: Total proteins without lengths: 0
+11/20/2018 03:38:20 PM - humann2.search.blastx_coverage - INFO: Proteins with coverage greater than threshold (50.0): 43
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Total alignments where percent identity is not a number: 0
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Total alignments where alignment length is not a number: 0
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Total alignments where E-value is not a number: 0
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Total translated alignments not included based on large e-value: 0
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Total translated alignments not included based on small percent identity: 27
+11/20/2018 03:38:20 PM - humann2.utilities - DEBUG: Total translated alignments not included based on small query coverage: 11
+11/20/2018 03:38:20 PM - humann2.search.translated - DEBUG: Total translated alignments not included based on small subject coverage value: 0
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	translated alignment post-processing 	:	 0	 seconds
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: Total bugs after translated alignment: 3
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: 
+g__Bacteroides.s__Bacteroides_vulgatus: 7336 hits
+unclassified: 974 hits
+g__Bacteroides.s__Bacteroides_dorei: 8820 hits
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: Total gene families after translated alignment: 3728
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: Unaligned reads after translated alignment: 18.5571428571 %
+11/20/2018 03:38:20 PM - humann2.humann2 - INFO: Computing gene families ...
+11/20/2018 03:38:20 PM - humann2.quantify.families - DEBUG: Compute gene families
+11/20/2018 03:38:20 PM - humann2.store - INFO: 
+Total gene families  : 3728
+g__Bacteroides.s__Bacteroides_vulgatus : 2134 gene families
+unclassified : 43 gene families
+g__Bacteroides.s__Bacteroides_dorei : 2558 gene families
+11/20/2018 03:38:54 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	computing gene families 	:	 33	 seconds
+11/20/2018 03:38:54 PM - humann2.humann2 - INFO: Computing pathways abundance and coverage ...
+11/20/2018 03:38:54 PM - humann2.quantify.modules - DEBUG: Write flat reactions to pathways file for Minpath
+11/20/2018 03:38:54 PM - humann2.quantify.modules - INFO: Compute reaction scores for bug: g__Bacteroides.s__Bacteroides_vulgatus
+11/20/2018 03:38:55 PM - humann2.quantify.modules - INFO: Run MinPath on g__Bacteroides.s__Bacteroides_vulgatus
+11/20/2018 03:38:55 PM - humann2.quantify.modules - INFO: Compute reaction scores for bug: unclassified
+11/20/2018 03:38:55 PM - humann2.quantify.modules - INFO: Run MinPath on unclassified
+11/20/2018 03:38:55 PM - humann2.quantify.modules - INFO: Compute reaction scores for bug: all
+11/20/2018 03:38:56 PM - humann2.quantify.modules - INFO: Run MinPath on all
+11/20/2018 03:38:56 PM - humann2.quantify.modules - INFO: Compute reaction scores for bug: g__Bacteroides.s__Bacteroides_dorei
+11/20/2018 03:38:57 PM - humann2.quantify.modules - INFO: Run MinPath on g__Bacteroides.s__Bacteroides_dorei
+11/20/2018 03:38:57 PM - humann2.utilities - DEBUG: Using python module : /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py
+11/20/2018 03:38:57 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/python /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py -any /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpyxKd7U -map /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpLlt9Ut -report /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpKSDUFi -details /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpQmDlI2 -mps /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpqznJov
+11/20/2018 03:38:58 PM - humann2.utilities - DEBUG: Using python module : /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py
+11/20/2018 03:38:58 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/python /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py -any /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmplyTib9 -map /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpLlt9Ut -report /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmp0yJlWw -details /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpCKBhd3 -mps /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpDBwPk8
+11/20/2018 03:38:59 PM - humann2.utilities - DEBUG: Using python module : /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py
+11/20/2018 03:38:59 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/python /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py -any /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpcmP8BW -map /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpLlt9Ut -report /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmp7saXLf -details /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpKakxMQ -mps /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmptfJe6y
+11/20/2018 03:39:00 PM - humann2.utilities - DEBUG: Using python module : /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py
+11/20/2018 03:39:00 PM - humann2.utilities - INFO: Execute command: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/python /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/quantify/MinPath12hmp.py -any /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpg3oT1V -map /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpLlt9Ut -report /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpQdHQ87 -details /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpPZjcPX -mps /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo/tmpgcHUr6
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway abundance for bug: g__Bacteroides.s__Bacteroides_vulgatus
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway abundance for bug: unclassified
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway abundance for bug: all
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway abundance for bug: g__Bacteroides.s__Bacteroides_dorei
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway coverage for bug: g__Bacteroides.s__Bacteroides_vulgatus
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway coverage for bug: unclassified
+11/20/2018 03:39:01 PM - humann2.quantify.modules - DEBUG: Compute pathway coverage for bug: all
+11/20/2018 03:39:02 PM - humann2.quantify.modules - DEBUG: Compute pathway coverage for bug: g__Bacteroides.s__Bacteroides_dorei
+11/20/2018 03:39:02 PM - humann2.quantify.modules - DEBUG: Print pathways _Abundance
+11/20/2018 03:39:02 PM - humann2.quantify.modules - DEBUG: Print pathways _Coverage
+11/20/2018 03:39:02 PM - humann2.humann2 - INFO: TIMESTAMP: Completed 	computing pathways 	:	 8	 seconds
+11/20/2018 03:39:02 PM - humann2.humann2 - INFO: 
+Output files created: 
+/ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_genefamilies.tsv
+/ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_pathabundance.tsv
+/ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_pathcoverage.tsv
+
+11/20/2018 03:39:02 PM - humann2.utilities - DEBUG: Remove directory: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output_2/demo_humann2_temp/tmpC1ktuo

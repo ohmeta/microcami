@@ -1,0 +1,48 @@
+Creating output directory: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output
+Output files will be written to: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output
+
+Running metaphlan2.py ........
+
+Found g__Bacteroides.s__Bacteroides_dorei : 59.40% of mapped reads
+Found g__Bacteroides.s__Bacteroides_vulgatus : 40.60% of mapped reads
+
+Total species selected from prescreen: 2
+
+Selected species explain 100.00% of predicted community composition
+
+
+Creating custom ChocoPhlAn database ........
+
+
+Running bowtie2-build ........
+
+
+Running bowtie2 ........
+
+Total bugs from nucleotide alignment: 2
+g__Bacteroides.s__Bacteroides_vulgatus: 7336 hits
+g__Bacteroides.s__Bacteroides_dorei: 8820 hits
+
+Total gene families from nucleotide alignment: 3685
+
+Unaligned reads after nucleotide alignment: 23.0666666667 %
+
+
+Running diamond ........
+
+
+Aligning to reference database: uniref90_demo_prots.dmnd
+
+CRITICAL ERROR: Error executing: /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/bin/diamond blastx --query /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/demo_bowtie2_unaligned.fa --evalue 1.0 --threads 1 --max-target-seqs 20 --outfmt 6 --db /ldfssz1/ST_META/share/User/zhujie/bioenv/envs/bioenv2/lib/python2.7/site-packages/humann2/data/uniref_DEMO/uniref90_demo_prots --out /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/tmpIGEQPC/diamond_m8_9MHwFp --tmpdir /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/tmpIGEQPC
+
+Error message returned from diamond :
+diamond v0.9.21.122 | by Benjamin Buchfink <buchfink@gmail.com>
+Licensed under the GNU AGPL <https://www.gnu.org/licenses/agpl.txt>
+Check http://github.com/bbuchfink/diamond for updates.
+
+#CPU threads: 1
+Scoring parameters: (Matrix=BLOSUM62 Lambda=0.267 K=0.041 Penalties=11/1)
+Temporary directory: /ldfssz1/ST_META/share/User/zhujie/toolkit/microcami/profiling/humann2_analysis/humann2_output/demo_humann2_temp/tmpIGEQPC
+Opening the database...  [0.007132s]
+Error: Database was built with a different version of Diamond and is incompatible.
+
