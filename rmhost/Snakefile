@@ -1,0 +1,127 @@
+#!/usr/bin/env snakemake
+from snakemake.utils import min_version
+
+min_version("5.0")
+
+import os
+
+hg19_soap_index_prefix = "/hwfssz1/ST_META/share/database/human/hg19/Hg19.fa.index"
+# hg38_soap_index_prefix
+# hg19_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg19/hg19full/bwa_index/hg19full.fa"
+hg38_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bwa_index/hg38full.fa"
+
+SAMPLESTEST = {
+    "gy450g.1w" : {
+        "r1": "data/gy450g.1w.fp.1.fq.gz",
+        "r2": "data/gy450g.1w.fp.2.fq.gz"
+    }
+}
+
+SAMPLES = {
+    "gy450g.1w" : {
+        "r1": "data/gy450g.1w.fp.1.fq.gz",
+        "r2": "data/gy450g.1w.fp.2.fq.gz"
+    },
+    "gy450g.10w" : {
+        "r1": "data/gy450g.10w.fp.1.fq.gz",
+        "r2": "data/gy450g.10w.fp.2.fq.gz"
+    },
+    "gy450g.100w" : {
+        "r1": "data/gy450g.100w.fp.1.fq.gz",
+        "r2": "data/gy450g.100w.fp.2.fq.gz"
+    },
+    "gy450g.1000w" : {
+        "r1": "data/gy450g.1000w.fp.1.fq.gz",
+        "r2": "data/gy450g.1000w.fp.2.fq.gz"
+    }
+}
+
+rule all:
+    input:
+        expand([os.path.join("results", "{sample}.soap.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.bwa.rmhost.{read}.fq.gz"),
+                "benchmarks/rmhost.benchmark.txt"],
+               sample=SAMPLES,
+               read=["1", "2"])
+
+rule rmhost_soap:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
+        index = expand("{prefix}.{suffix}",
+                       prefix=hg19_soap_index_prefix,
+                       suffix=["amb", "ann", "bwt", "fmv", "hot", "lkt", "pac",
+                               "rev.bwt", "rev.fmv", "rev.lkt", "rev.pac", "sa"])
+    output:
+        r1 = os.path.join("results", "{sample}.soap.rmhost.1.fq.gz"),
+        r2 = os.path.join("results", "{sample}.soap.rmhost.2.fq.gz")
+    log:
+        "logs/{sample}.soap.rmhost.log"
+    params:
+        index_prefix = hg19_soap_index_prefix,
+        output_prefix = os.path.join("results", "{sample}.soap")
+    benchmark:
+        "benchmarks/{sample}.soap.rmhost.benchmark.txt"
+    threads:
+        8
+    shell:
+        '''
+        perl bin/rmhost.pl \
+             -a {input.r1} -b {input.r2} \
+             -d {params.index_prefix} -q 1 -p {params.output_prefix} -t {threads} 2> {log}
+        '''
+
+rule rmhost_bwa:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
+        index = expand("{prefix}.{suffix}",
+                        prefix=hg38_bwa_index_prefix,
+                        suffix=["amb", "ann", "bwt", "pac", "sa"])
+    output:
+        flagstat = os.path.join("results", "{sample}.bwa.flagstat.txt"),
+        r1 = os.path.join("results", "{sample}.bwa.rmhost.1.fq.gz"),
+        r2 = os.path.join("results", "{sample}.bwa.rmhost.2.fq.gz")
+    log:
+        "logs/{sample}.bwa.rmhost.log"
+    params:
+        index_prefix = hg38_bwa_index_prefix
+    benchmark:
+        "benchmarks/{sample}.bwa.rmhost.benchmark.txt"
+    threads:
+        8
+    shell:
+        '''
+        bwa mem -t {threads} {params.index_prefix} {input.r1} {input.r2} |
+        tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
+        samtools fastq -@{threads} -f 12 -F 256 -1 {output.r1} -2 {output.r2} -
+        '''
+
+rule merge:
+    input:
+        expand("benchmarks/{sample}.{mapper}.rmhost.benchmark.txt",
+               sample=SAMPLES,
+               mapper=["soap", "bwa"])
+    output:
+        benchmark = "benchmarks/rmhost.benchmark.txt"
+    run:
+        import pandas
+        import os
+
+        def change(benchmark, mapper_, sample_):
+            df = pandas.read_table(benchmark)
+            df.insert(loc=0, column='mapper', value=[mapper_])
+            df.insert(loc=0, column='sample', value=[sample_])
+            return df
+
+        df = pandas.DataFrame()
+
+        for benchmark in input:
+            mapper_ = os.path.basename(benchmark).split('.')[2]
+            sample_ = ".".join(os.path.basename(benchmark).split('.')[0:2])
+
+            df_ = change(benchmark, mapper_, sample_)
+            df = pandas.concat([df, df_])
+
+        df.to_csv(output.benchmark, sep='\t', index=False)
+

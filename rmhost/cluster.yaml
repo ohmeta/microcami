@@ -1,0 +1,18 @@
+__default__:
+  queue: "st.q"
+  project: "P18Z10200N0127"
+  workdir: "./"
+  mem: "1G"
+  cores: 1
+
+rmhost_soap:
+  mem: "2G"
+  cores: 8
+  output: "cluster_logs/{rule}.{wildcards}.o"
+  error:  "cluster_logs/{rule}.{wildcards}.e"
+
+rmhost_bwa:
+  mem: "2G"
+  cores: 8
+  output: "cluster_logs/{rule}.{wildcards.sample}.o"
+  error:  "cluster_logs/{rule}.{wildcards.sample}.e"
