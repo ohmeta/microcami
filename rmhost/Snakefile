@@ -39,7 +39,7 @@ SAMPLES = {
 rule all:
     input:
         expand([os.path.join("results", "{sample}.soap.rmhost.{read}.fq.gz"),
-                os.path.join("results", "{sample}.bwa.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.metapi.rmhost.{read}.fq.gz"),
                 "benchmarks/rmhost.benchmark.txt"],
                sample=SAMPLES,
                read=["1", "2"])
@@ -71,7 +71,7 @@ rule rmhost_soap:
              -d {params.index_prefix} -q 1 -p {params.output_prefix} -t {threads} 2> {log}
         '''
 
-rule rmhost_bwa:
+rule rmhost_metapi:
     input:
         r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
@@ -80,22 +80,67 @@ rule rmhost_bwa:
                         suffix=["amb", "ann", "bwt", "pac", "sa"])
     output:
         flagstat = os.path.join("results", "{sample}.bwa.flagstat.txt"),
-        r1 = os.path.join("results", "{sample}.bwa.rmhost.1.fq.gz"),
-        r2 = os.path.join("results", "{sample}.bwa.rmhost.2.fq.gz")
+        r1_f12_F256 = os.path.join("results", "{sample}.metapi.f12F256.rmhost.1.fq.gz"),
+        r2_f12_F256 = os.path.join("results", "{sample}.metapi.f12F256.rmhost.2.fq.gz"),
+        r1_f4 = os.path.join("results", "{sample}.metapi.f4.rmhost.1.fq.gz"),
+        r2_f4 = os.path.join("results", "{sample}.metapi.f4.rmhost.2.fq.gz"),
+
     log:
         "logs/{sample}.bwa.rmhost.log"
     params:
         index_prefix = hg38_bwa_index_prefix
     benchmark:
-        "benchmarks/{sample}.bwa.rmhost.benchmark.txt"
+        "benchmarks/{sample}.metapi.rmhost.benchmark.txt"
     threads:
         8
     shell:
         '''
         bwa mem -t {threads} {params.index_prefix} {input.r1} {input.r2} |
         tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
-        samtools fastq -@{threads} -f 12 -F 256 -1 {output.r1} -2 {output.r2} -
+        tee >(samtools fastq -@{threads} -f 12 -F 256 -1 {output.r1_f12_F256} -2 {output.r2_f12_F256} -) |
+        samtools fastq -@{threads} -f 4 -1 {output.r1_f4} -2 {output.r2_f4} -
         '''
+
+rule rmhost_atlas:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
+    output:
+        temp(expand("{{sample}}/sequence_quality_control/{{sample}}_{step}_{fraction}.fastq.gz",
+             fraction=MULTIFILE_FRACTIONS, step=PROCESSED_STEPS[-1])),
+        contaminants = expand("{{sample}}/sequence_quality_control/contaminants/{db}_{fraction}.fastq.gz",
+        db=list(config["contaminant_references"].keys()),
+        fraction=MULTIFILE_FRACTIONS),
+        stats = "{sample}/sequence_quality_control/{sample}_decontamination_reference_stats.txt"
+    benchmark:
+        "logs/benchmarks/QC/decontamination/{sample}.txt"
+    params:
+            contaminant_folder = lambda wc, output: os.path.dirname(output.contaminants[0]),
+            maxindel = 20,
+            minratio = 0.65,
+            minhits = 1,
+            ambiguous = "best",
+            k = 13
+        log:
+            "{sample}/logs/QC/decontamination.log"
+        conda:
+            "%s/required_packages.yaml" % CONDAENV
+        threads:
+            config.get("threads", 1)
+        resources:
+            mem = 32,
+            java_mem = int(config.get("java_mem", JAVA_MEM) * JAVA_MEM_FRACTION)
+        shell:
+            '''
+            bbsplit.sh in1={input[0]} in2={input[1]} \
+                outu1={output[0]} outu2={output[1]} \
+                basename="{params.contaminant_folder}/%_R#.fastq.gz" \
+                maxindel={params.maxindel} minratio={params.minratio} \
+                minhits={params.minhits} ambiguous={params.ambiguous} refstats={output.stats}\
+                threads={threads} k={params.k} local=t \
+                -Xmx{resources.java_mem}G 2> {log}
+            '''
+
 
 rule merge:
     input:
