@@ -43,7 +43,7 @@ SAMPLES = {
 rule all:
     input:
         expand([os.path.join("results", "{sample}.soap.rmhost.{read}.fq.gz"),
-                os.path.join("results", "{sample}.metapi.bwa.f12.F256.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.metapi.bwa.f12F256.rmhost.{read}.fq.gz"),
                 os.path.join("results", "{sample}.metapi.bwa.f4.rmhost.{read}.fq.gz"),
                 os.path.join("results", "{sample}.atlas.bbmap.rmhost.{read}.fq.gz"),
                 os.path.join("results", "{sample}.sunbeam.bwa.rmhost.{read}.fq.gz"),
