@@ -1,14 +1,18 @@
 #!/usr/bin/env snakemake
 from snakemake.utils import min_version
+import pysam
+import subprocess
 
 min_version("5.0")
 
 import os
 
-hg19_soap_index_prefix = "/hwfssz1/ST_META/share/database/human/hg19/Hg19.fa.index"
-# hg38_soap_index_prefix
+hg19full_soap_index_prefix = "/hwfssz1/ST_META/share/database/human/hg19/Hg19.fa.index"
+hg38full_soap_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/soap_index/hg38full.fa.index"
 # hg19_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg19/hg19full/bwa_index/hg19full.fa"
-hg38_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bwa_index/hg38full.fa"
+hg38full_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bwa_index/hg38full.fa"
+hg38full_bbmap_index_fa = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bbmap_index/hg38full.fa"
+hg38full_bowtie2_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bowtie2_index/hg38full.fa"
 
 SAMPLESTEST = {
     "gy450g.1w" : {
@@ -39,7 +43,11 @@ SAMPLES = {
 rule all:
     input:
         expand([os.path.join("results", "{sample}.soap.rmhost.{read}.fq.gz"),
-                os.path.join("results", "{sample}.metapi.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.metapi.bwa.f12.F256.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.metapi.bwa.f4.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.atlas.bbmap.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.sunbeam.bwa.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.anvio.bowtie2.rmhost.{read}.fq.gz"),
                 "benchmarks/rmhost.benchmark.txt"],
                sample=SAMPLES,
                read=["1", "2"])
@@ -49,106 +57,325 @@ rule rmhost_soap:
         r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
         index = expand("{prefix}.{suffix}",
-                       prefix=hg19_soap_index_prefix,
+                       prefix=hg38full_soap_index_prefix,
                        suffix=["amb", "ann", "bwt", "fmv", "hot", "lkt", "pac",
                                "rev.bwt", "rev.fmv", "rev.lkt", "rev.pac", "sa"])
     output:
         r1 = os.path.join("results", "{sample}.soap.rmhost.1.fq.gz"),
         r2 = os.path.join("results", "{sample}.soap.rmhost.2.fq.gz")
     log:
-        "logs/{sample}.soap.rmhost.log"
+        "logs/{sample}.rmhost.soap.log"
     params:
-        index_prefix = hg19_soap_index_prefix,
+        index_prefix = hg38full_soap_index_prefix,
         output_prefix = os.path.join("results", "{sample}.soap")
     benchmark:
-        "benchmarks/{sample}.soap.rmhost.benchmark.txt"
+        "benchmark/{sample}.soap.rmhost.benchmark.txt"
     threads:
         8
     shell:
         '''
-        perl bin/rmhost.pl \
-             -a {input.r1} -b {input.r2} \
-             -d {params.index_prefix} -q 1 -p {params.output_prefix} -t {threads} 2> {log}
+        perl bin/rmhost.pl -a {input.r1} -b {input.r2} \
+        -d {params.index_prefix} -q 1 -p {params.output_prefix} -t {threads} 2> {log}
         '''
 
-rule rmhost_metapi:
+rule rmhost_metapi_bwa:
     input:
         r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
         index = expand("{prefix}.{suffix}",
-                        prefix=hg38_bwa_index_prefix,
+                        prefix=hg38full_bwa_index_prefix,
                         suffix=["amb", "ann", "bwt", "pac", "sa"])
     output:
-        flagstat = os.path.join("results", "{sample}.bwa.flagstat.txt"),
-        r1_f12_F256 = os.path.join("results", "{sample}.metapi.f12F256.rmhost.1.fq.gz"),
-        r2_f12_F256 = os.path.join("results", "{sample}.metapi.f12F256.rmhost.2.fq.gz"),
-        r1_f4 = os.path.join("results", "{sample}.metapi.f4.rmhost.1.fq.gz"),
-        r2_f4 = os.path.join("results", "{sample}.metapi.f4.rmhost.2.fq.gz"),
-
+        flagstat = os.path.join("results", "{sample}.rmhost.metapi.bwa.flagstat.txt"),
+        bamstats = os.path.join("results", "{sample}.rmhost.metapi.bwa.bamstats.txt"),
+        bam = os.path.join("results", "{sample}.rmhost.metapi.bwa.host.full.sorted.bam"),
+        r1_f12_F256 = os.path.join("results", "{sample}.metapi.bwa.f12F256.rmhost.1.fq.gz"),
+        r2_f12_F256 = os.path.join("results", "{sample}.metapi.bwa.f12F256.rmhost.2.fq.gz"),
+        r1_f4 = os.path.join("results", "{sample}.metapi.bwa.f4.rmhost.1.fq.gz"),
+        r2_f4 = os.path.join("results", "{sample}.metapi.bwa.f4.rmhost.2.fq.gz")
     log:
-        "logs/{sample}.bwa.rmhost.log"
+        "logs/{sample}.rmhost.metapi.bwa.log"
     params:
-        index_prefix = hg38_bwa_index_prefix
+        index_prefix = hg38full_bwa_index_prefix
     benchmark:
-        "benchmarks/{sample}.metapi.rmhost.benchmark.txt"
+        "benchmark/{sample}.metapi_bwa.rmhost.benchmark.txt"
     threads:
         8
     shell:
         '''
         bwa mem -t {threads} {params.index_prefix} {input.r1} {input.r2} |
         tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
+        tee >(samtools stats -@{threads} - > {output.bamstats}) |
         tee >(samtools fastq -@{threads} -f 12 -F 256 -1 {output.r1_f12_F256} -2 {output.r2_f12_F256} -) |
-        samtools fastq -@{threads} -f 4 -1 {output.r1_f4} -2 {output.r2_f4} -
+        tee >(samtools fastq -@{threads} -f 4 -1 {output.r1_f4} -2 {output.r2_f4} -) |
+        samtools sort -@{threads} - -o {output.bam} 2> {log}
         '''
 
-rule rmhost_atlas:
+
+# https://github.com/metagenome-atlas/atlas/blob/master/atlas/rules/qc.snakefile#L311
+JAVA_MEM = 10
+JAVA_MEM_FRACTION = 0.85
+
+CONTAMINANT_MAX_INDEL = 20
+CONTAMINANT_MIN_RATIO = 0.65
+CONTAMINANT_MINIMUM_HITS = 1
+CONTAMINANT_AMBIGUOUS = "best"
+CONTAMINANT_KMER_LENGTH = 13
+
+rule bbmap_index_host_db:
+    input:
+        hg38full_bbmap_index_fa
+    output:
+        os.path.join(os.path.dirname(hg38full_bbmap_index_fa), "ref/genome/1/summary.txt")
+    threads:
+        8
+    resources:
+        mem = JAVA_MEM,
+        java_mem = int(JAVA_MEM * JAVA_MEM_FRACTION)
+    log:
+        "logs/bbmap_index_host_db.log"
+    params:
+        k = CONTAMINANT_KMER_LENGTH
+    shell:
+        '''
+        bbmap.sh -Xmx{resources.java_mem}G ref={input} threads={threads} k={params.k} local=t 2> {log}
+        '''
+
+rule rmhost_atlas_bbmap:
     input:
         r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
+        host_fa = hg38full_bbmap_index_fa
     output:
-        temp(expand("{{sample}}/sequence_quality_control/{{sample}}_{step}_{fraction}.fastq.gz",
-             fraction=MULTIFILE_FRACTIONS, step=PROCESSED_STEPS[-1])),
-        contaminants = expand("{{sample}}/sequence_quality_control/contaminants/{db}_{fraction}.fastq.gz",
-        db=list(config["contaminant_references"].keys()),
-        fraction=MULTIFILE_FRACTIONS),
-        stats = "{sample}/sequence_quality_control/{sample}_decontamination_reference_stats.txt"
+        r1 = os.path.join("results", "{sample}.atlas.bbmap.rmhost.1.fq.gz"),
+        r2 = os.path.join("results", "{sample}.atlas.bbmap.rmhost.2.fq.gz"),
+        stats = os.path.join("results", "{sample}.rmhost.atlas.bbmap.reference_stats.txt")
     benchmark:
-        "logs/benchmarks/QC/decontamination/{sample}.txt"
+        "benchmark/{sample}.atlas_bbmap.rmhost.benchmark.txt"
     params:
-            contaminant_folder = lambda wc, output: os.path.dirname(output.contaminants[0]),
-            maxindel = 20,
-            minratio = 0.65,
-            minhits = 1,
-            ambiguous = "best",
-            k = 13
-        log:
-            "{sample}/logs/QC/decontamination.log"
-        conda:
-            "%s/required_packages.yaml" % CONDAENV
-        threads:
-            config.get("threads", 1)
-        resources:
-            mem = 32,
-            java_mem = int(config.get("java_mem", JAVA_MEM) * JAVA_MEM_FRACTION)
-        shell:
-            '''
-            bbsplit.sh in1={input[0]} in2={input[1]} \
-                outu1={output[0]} outu2={output[1]} \
-                basename="{params.contaminant_folder}/%_R#.fastq.gz" \
-                maxindel={params.maxindel} minratio={params.minratio} \
-                minhits={params.minhits} ambiguous={params.ambiguous} refstats={output.stats}\
-                threads={threads} k={params.k} local=t \
-                -Xmx{resources.java_mem}G 2> {log}
-            '''
+        maxindel = CONTAMINANT_MAX_INDEL,
+        minratio = CONTAMINANT_MIN_RATIO,
+        minhits = CONTAMINANT_MINIMUM_HITS,
+        ambiguous = CONTAMINANT_AMBIGUOUS,
+        k = CONTAMINANT_KMER_LENGTH
+    log:
+        "logs/{sample}.rmhost.atlas.bbmap.log"
+    threads:
+        8
+    resources:
+        mem = 32,
+        java_mem = int(JAVA_MEM * JAVA_MEM_FRACTION)
+    shell:
+        '''
+        bbmap.sh ref={input.host_fa} in1={input.r1} in2={input.r2} \
+            outu1={output.r1} outu2={output.r2} \
+            maxindel={params.maxindel} minratio={params.minratio} \
+            minhits={params.minhits} ambiguous={params.ambiguous} refstats={output.stats} \
+            threads={threads} k={params.k} local=t \
+            -Xmx{resources.java_mem}G 2> {log}
+        '''
 
+# https://github.com/sunbeam-labs/sunbeam/blob/dev/rules/qc/decontaminate.rules
+rule rmhost_sunbeam_bwa:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
+        index = expand("{prefix}.{suffix}",
+                        prefix=hg38full_bwa_index_prefix,
+                        suffix=["amb", "ann", "bwt", "pac", "sa"])
+    output:
+        bam = os.path.join("results", "{sample}.sunbeam.bwa.host.F4.sorted.bam"),
+        flagstat = os.path.join("results", "{sample}.rmhost.sunbeam.bwa.flagstat.txt"),
+        bamstats = os.path.join("results", "{sample}.rmhost.sunbeam.bwa.bamstats.txt")
+    benchmark:
+        "benchmark/{sample}.sunbeam_bwa.rmhost.benchmark.txt"
+    params:
+        index_prefix = hg38full_bwa_index_prefix
+    log:
+        "logs/{sample}.rmhost.sunbeam.bwa.log"
+    threads:
+        8
+    shell:
+        '''
+        bwa mem -M -t {threads} {params.index_prefix} {input.r1} {input.r2} |
+        tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
+        tee >(samtools stats -@{threads} - > {output.bamstats}) |
+        samtools view -@{threads} -SF4 - |
+        samtools sort -@{threads} -o {output.bam} - 2> {log}
+        '''
+
+# https://github.com/sunbeam-labs/sunbeam/blob/dev/sunbeamlib/decontam.py
+def get_mapped_reads(fp, min_pct_id, min_len_frac):
+
+    sam = pysam.AlignmentFile(fp)
+    for read in sam:
+        if ((not read.is_unmapped) and
+            (_get_frac(read) > min_len_frac) and
+            (_get_pct_identity(read) > min_pct_id)):
+            yield read.query_name
+
+def _get_pct_identity(read):
+    if read.has_tag("NM"):
+        edit_dist = read.get_tag("NM")
+    else:
+        edit_dist = 0
+    pct_mm = float(edit_dist) / read.alen
+    return 1 - pct_mm
+
+def _get_frac(read):
+    cigar = read.cigartuples
+    clip = 0
+    for pair in cigar:
+        if pair[0] == 4 or pair[0] == 5:
+            clip = clip + pair[1]
+    frac = float(read.query_alignment_length)/(read.query_alignment_length + clip)
+    return frac
+
+PCT_ID = 0.5
+FRAC = 0.6
+
+rule sunbeam_get_mapped_reads:
+    input:
+        bam = os.path.join("results", "{sample}.sunbeam.bwa.host.F4.bam")
+    output:
+        host_ids = os.path.join("results", "{sample}.sunbeam.mapped.ids")
+    params:
+        pct_id = PCT_ID,
+        frac = FRAC
+    run:
+        with open(output.host_ids, 'w') as out:
+            last = None
+            for read_id in get_mapped_reads(input.bam, params.pct_id, params.frac):
+                if read_id == last:
+                    continue
+                else:
+                    out.write(read_id + '\n')
+                    last = read_id
+
+rule sunbeam_filter_reads_1:
+    input:
+        host_ids = os.path.join("results", "{sample}.sunbeam.mapped.host.ids"),
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"]
+    output:
+        r1 = os.path.join("results", "{sample}.sunbeam.bwa.rmhost.1.fq.gz"),
+        stats = os.path.join("results", "{sample}.sunbeam.bwa.rmhost.stats")
+    log:
+        "logs/{sample}.rmhost.sunbeam_filter.r1.log"
+    run:
+        original = int(str(subprocess.getoutput("zcat {} | wc -l".format(input.r1))).strip()) // 4
+        host = int(subprocess.getoutput("cat {} | wc -l".format(input.host_ids)).strip())
+        nonhost = int(original - host)
+        shell(
+            '''
+            gzip -dc {input.r1} |
+            rbt fastq-filter {input.host_ids} |
+            gzip > {output.r1} 2> {log}
+            ''')
+        with open(output.stats, 'w') as stats_handle:
+            stats_handle.write("{}\n".format("\t".join([str(host), str(nonhost)])))
+
+
+rule sunbeam_filter_reads_2:
+    input:
+        host_ids = os.path.join("results", "{sample}.sunbeam.mapped.host.ids"),
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"]
+    output:
+        r2 = os.path.join("results", "{sample}.sunbeam.bwa.rmhost.2.fq.gz")
+    log:
+        "logs/{sample}.rmhost.sunbeam_filter.r2.log"
+    shell:
+        '''
+        gzip -dc {input.r2} | \
+        rbt fastq-filter {input.host_ids} | \
+        gzip > {output.r2} 2> {log}
+        '''
+
+# https://github.com/merenlab/anvio/issues/1011
+# https://github.com/merenlab/anvio/pull/1025
+# https://github.com/merenlab/anvio/blob/master/anvio/workflows/metagenomics/Snakefile#L691
+# https://github.com/merenlab/anvio/blob/master/anvio/workflows/metagenomics/__init__.py#L136
+# https://github.com/BenLangmead/bowtie2/issues/70
+rule rmhost_anvio_bowtie2:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"]
+    output:
+        bam = os.path.join("results", "{sample}.rmhost.anvio.bowtie2.no-unal.F4.sorted.bam"),
+        bai = os.path.join("results", "{sample}.rmhost.anvio.bowtie2.no-unal.F4.sorted.bam.bai"),
+        host_ids = os.path.join("results", "{sample}.sunbeam.mapped.host.ids")
+    params:
+        host_index_prefix = hg38full_bowtie2_index_prefix,
+        additional_params = "--no-unal"
+    benchmark:
+        "bechmark/{sample}.anvio_bowtie2.rmhost.benchmark.txt"
+    log:
+       "logs/{sample}.rmhost.anvio.bowtie2.no-unal.log"
+    threads:
+        8
+    shell:
+        '''
+        bowtie2 --threads {threads} -x {params.host_index_prefix} -1 {input.r1} -2 {input.r2} {params.additional_params} |
+        samtools view -@{threads} -SF4 - |
+        samtools sort -@{threads} -o {output.bam} - 2> {log}
+        samtools index -@{threads} {output.bam}
+        samtools view {output.bam} | cut -f 1 | sort | uniq > {output.host_ids}
+        '''
+
+rule rmhost_anvio_get_unpaired_reads_1:
+    input:
+        reas = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        host_ids = os.path.join("results", "{sample}.sunbeam.mapped.host.ids")
+    output:
+        reads = os.path.join("results", "{sample}.anvio.bowtie2.rmhost.1.fq.gz"),
+        reads_host = os.path.join("results", "{sample}.anvio.bowtie2.host.1.fq.gz"),
+        reads_unzip = temp(os.path.join("results", "{sample}.anvio.unzip.1.fq"))
+    params:
+        delimiter = " ",
+    log:
+        "logs/{sample}.rmhost.anvio.get_unpaired_r1.log"
+    threads:
+        8
+    shell:
+        '''
+        gzip -dc {input.reads} > {output.reads_unzip}
+        iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d {params.delimiter} 2> {log}
+        gzip < {output.reads_unzip}.survived > {output.reads}
+        rm -rf {output.reads_unzip}.survived
+        gizp < {output.reads_unzip}.removed > {output.reads_host}
+        rm -rf {output.reads_unzip}.removed
+        '''
+
+rule rmhost_anvio_get_unpaired_reads_2:
+    input:
+        reads = lambda wildcards: SAMPLES[wildcards.sample]["r2"],
+        host_ids = os.path.join("results", "{sample}.sunbeam.mapped.host.ids")
+    output:
+        reads = os.path.join("results", "{sample}.anvio.bowtie2.rmhost.2.fq.gz"),
+        reads_host = os.path.join("results", "{sample}.anvio.bowtie2.host.2.fq.gz"),
+        reads_unzip = temp(os.path.join("results", "{sample}.anvio.unzip.2.fq"))
+    params:
+        delimiter = " "
+    log:
+        "logs/{sample}.rmhost.anvio.get_unpaired_r2.log"
+    threads:
+        8
+    shell:
+        '''
+        gzip -dc {input.reads} > {output.reads_unzip}
+        iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d {params.delimiter} 2> {log}
+        gzip < {output.reads_unzip}.survived > {output.reads}
+        rm -rf {output.reads_unzip}.survived
+        gizp < {output.reads_unzip}.removed > {output.reads_host}
+        rm -rf {output.reads_unzip}.removed
+        '''
 
 rule merge:
     input:
         expand("benchmarks/{sample}.{mapper}.rmhost.benchmark.txt",
                sample=SAMPLES,
-               mapper=["soap", "bwa"])
+               mapper=["soap", "metapi_bwa", "atlas_bbmap", "sunbeam_bwa", "anvio_bowtie2"])
     output:
-        benchmark = "benchmarks/rmhost.benchmark.txt"
+        benchmark = "benchmark/rmhost.benchmark.txt"
     run:
         import pandas
         import os
@@ -169,4 +396,3 @@ rule merge:
             df = pandas.concat([df, df_])
 
         df.to_csv(output.benchmark, sep='\t', index=False)
-
