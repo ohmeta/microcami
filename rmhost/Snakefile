@@ -12,7 +12,7 @@ hg38full_soap_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy
 # hg19_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg19/hg19full/bwa_index/hg19full.fa"
 hg38full_bwa_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bwa_index/hg38full.fa"
 hg38full_bbmap_index_fa = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bbmap_index/hg38full.fa"
-hg38full_bowtie2_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bowtie2_index/hg38full.fa"
+hg38full_bowtie2_index_prefix = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bowtie2_index/hg38full"
 
 SAMPLESTEST = {
     "gy450g.1w" : {
