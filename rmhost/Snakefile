@@ -48,6 +48,9 @@ rule all:
                 os.path.join("results", "{sample}.atlas.bbmap.rmhost.{read}.fq.gz"),
                 os.path.join("results", "{sample}.sunbeam.bwa.rmhost.{read}.fq.gz"),
                 os.path.join("results", "{sample}.anvio.bowtie2.rmhost.{read}.fq.gz"),
+                os.path.join("results", "{sample}.sunbeam.bwa.host.F4.sorted.bam"),
+                os.path.join("results", "{sample}.rmhost.sunbeam.bwa.flagstat.txt"),
+                os.path.join("results", "{sample}.rmhost.sunbeam.bwa.bamstats.txt")
                 "benchmarks/rmhost.benchmark.txt"],
                sample=SAMPLES,
                read=["1", "2"])
@@ -153,6 +156,7 @@ rule rmhost_atlas_bbmap:
     benchmark:
         "benchmark/{sample}.atlas_bbmap.rmhost.benchmark.txt"
     params:
+        contaminant_folder = "results/host_atlas",
         maxindel = CONTAMINANT_MAX_INDEL,
         minratio = CONTAMINANT_MIN_RATIO,
         minhits = CONTAMINANT_MINIMUM_HITS,
@@ -167,8 +171,9 @@ rule rmhost_atlas_bbmap:
         java_mem = int(JAVA_MEM * JAVA_MEM_FRACTION)
     shell:
         '''
-        bbmap.sh ref={input.host_fa} in1={input.r1} in2={input.r2} \
+        bbsplit.sh ref={input.host_fa} in1={input.r1} in2={input.r2} \
             outu1={output.r1} outu2={output.r2} \
+            basename="{params.contaminant_folder}/%_R#.fastq.gz" \
             maxindel={params.maxindel} minratio={params.minratio} \
             minhits={params.minhits} ambiguous={params.ambiguous} refstats={output.stats} \
             threads={threads} k={params.k} local=t \
