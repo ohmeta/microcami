@@ -343,7 +343,7 @@ rule rmhost_anvio_get_unpaired_reads_1:
     shell:
         '''
         gzip -dc {input.reads} > {output.reads_unzip}
-        iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d {params.delimiter} 2> {log}
+        iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d "{params.delimiter}" 2> {log}
         gzip < {output.reads_unzip}.survived > {output.reads}
         rm -rf {output.reads_unzip}.survived
         gizp < {output.reads_unzip}.removed > {output.reads_host}
@@ -367,7 +367,7 @@ rule rmhost_anvio_get_unpaired_reads_2:
     shell:
         '''
         gzip -dc {input.reads} > {output.reads_unzip}
-        iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d {params.delimiter} 2> {log}
+        iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d "{params.delimiter}" 2> {log}
         gzip < {output.reads_unzip}.survived > {output.reads}
         rm -rf {output.reads_unzip}.survived
         gizp < {output.reads_unzip}.removed > {output.reads_host}
