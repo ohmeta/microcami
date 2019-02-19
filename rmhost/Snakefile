@@ -323,7 +323,7 @@ rule rmhost_anvio_bowtie2:
 
 rule rmhost_anvio_get_unpaired_reads_1:
     input:
-        reas = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
+        reads = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         host_ids = os.path.join("results", "{sample}.sunbeam.mapped.host.ids")
     output:
         reads = os.path.join("results", "{sample}.anvio.bowtie2.rmhost.1.fq.gz"),
