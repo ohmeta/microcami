@@ -333,7 +333,9 @@ rule rmhost_anvio_get_unpaired_reads_1:
     output:
         reads = os.path.join("results", "{sample}.anvio.bowtie2.rmhost.1.fq.gz"),
         reads_host = os.path.join("results", "{sample}.anvio.bowtie2.host.1.fq.gz"),
-        reads_unzip = temp(os.path.join("results", "{sample}.anvio.unzip.1.fq"))
+        reads_unzip = temp(os.path.join("results", "{sample}.anvio.unzip.1.fq")),
+        removed = temp(os.path.join("results", "{sample}.anvio.unzip.1.fq.removed")),
+        survived = temp(os.path.join("results", "{sample}.anvio.unzip.1.fq.survived"))
     params:
         delimiter = " ",
     log:
@@ -344,10 +346,8 @@ rule rmhost_anvio_get_unpaired_reads_1:
         '''
         gzip -dc {input.reads} > {output.reads_unzip}
         iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d "{params.delimiter}" 2> {log}
-        gzip < {output.reads_unzip}.survived > {output.reads}
-        rm -rf {output.reads_unzip}.survived
-        gzip < {output.reads_unzip}.removed > {output.reads_host}
-        rm -rf {output.reads_unzip}.removed
+        gzip < {output.survived} > {output.reads}
+        gzip < {output.removed} > {output.reads_host}
         '''
 
 rule rmhost_anvio_get_unpaired_reads_2:
@@ -357,7 +357,9 @@ rule rmhost_anvio_get_unpaired_reads_2:
     output:
         reads = os.path.join("results", "{sample}.anvio.bowtie2.rmhost.2.fq.gz"),
         reads_host = os.path.join("results", "{sample}.anvio.bowtie2.host.2.fq.gz"),
-        reads_unzip = temp(os.path.join("results", "{sample}.anvio.unzip.2.fq"))
+        reads_unzip = temp(os.path.join("results", "{sample}.anvio.unzip.2.fq")),
+        removed = temp(os.path.join("results", "{sample}.anvio.unzip.2.fq.removed")),
+        survived = temp(os.path.join("results", "{sample}.anvio.unzip.2.fq.survived"))
     params:
         delimiter = " "
     log:
@@ -368,10 +370,8 @@ rule rmhost_anvio_get_unpaired_reads_2:
         '''
         gzip -dc {input.reads} > {output.reads_unzip}
         iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.host_ids} -d "{params.delimiter}" 2> {log}
-        gzip < {output.reads_unzip}.survived > {output.reads}
-        rm -rf {output.reads_unzip}.survived
-        gzip < {output.reads_unzip}.removed > {output.reads_host}
-        rm -rf {output.reads_unzip}.removed
+        gzip < {output.survived} > {output.reads}
+        gzip < {output.removed} > {output.reads_host}
         '''
 
 rule merge:
