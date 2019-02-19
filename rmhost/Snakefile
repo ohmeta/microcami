@@ -113,7 +113,7 @@ rule rmhost_metapi_bwa:
 
 
 # https://github.com/metagenome-atlas/atlas/blob/master/atlas/rules/qc.snakefile#L311
-JAVA_MEM = 10
+JAVA_MEM = 32
 JAVA_MEM_FRACTION = 0.85
 
 CONTAMINANT_MAX_INDEL = 20
