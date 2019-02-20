@@ -286,7 +286,7 @@ rule sunbeam_get_mapped_reads_id:
         pct_id = PCT_ID,
         frac = FRAC
     run:
-        with open(output.host_ids, 'w') as out:
+        with open(output.mapped_ids, 'w') as out:
             last = None
             for read_id in get_mapped_reads(input.bam, params.pct_id, params.frac):
                 if read_id == last:
