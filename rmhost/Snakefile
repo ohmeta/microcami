@@ -37,6 +37,14 @@ SAMPLES = {
     "gy450g.1000w" : {
         "r1": "data/gy450g.1000w.fp.1.fq.gz",
         "r2": "data/gy450g.1000w.fp.2.fq.gz"
+    },
+    "RDPYD18189937_A_saliva.956w" : {
+        "r1": "data/RDPYD18189937_A_saliva.956w.fp.1.fq.gz",
+        "r2": "data/RDPYD18189937_A_saliva.956w.fp.2.fq.gz"
+    },
+    "RSZYD18093181_A_togue.862w" : {
+        "r1": "data/RSZYD18093181_A_togue.862w.fp.1.fq.gz",
+        "r2": "data/RSZYD18093181_A_togue.862w.fp.2.fq.gz"
     }
 }
 
