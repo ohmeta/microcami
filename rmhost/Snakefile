@@ -268,7 +268,7 @@ def _get_frac(read):
     frac = float(read.query_alignment_length)/(read.query_alignment_length + clip)
     return frac
 
-rule sunbeam_get_mapped_reads:
+rule sunbeam_get_mapped_reads_id:
     input:
         bam = os.path.join("results", "{sample}.sunbeam_bwa_F4.hg38full.sorted.bam")
     output:
@@ -294,11 +294,13 @@ rule rmhost_sunbeam_get_unmapped_reads_1:
         reads = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.1.fq.gz"),
     log:
         "logs/{sample}.sunbeam_filter_r1.rmhost.log"
+    threads:
+        8
     shell:
         '''
-        gzip -dc {input.reads} |
+        pigz -p {threads} -dc {input.reads} |
         rbt fastq-filter {input.mapped_ids} |
-        gzip > {output.reads} 2> {log}
+        pigz -p {threads} - > {output.reads} 2> {log}
         '''
 
 rule rmhost_sunbeam_get_unmapped_reads_2:
@@ -309,11 +311,13 @@ rule rmhost_sunbeam_get_unmapped_reads_2:
         reads = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.2.fq.gz")
     log:
         "logs/{sample}.sunbeam_filter_r2.rmhost.log"
+    threads:
+        8
     shell:
         '''
-        gzip -dc {input.reads} | \
-        rbt fastq-filter {input.mapped_ids} | \
-        gzip > {output.reads} 2> {log}
+        pigz -p {threads} -dc {input.reads} |
+        rbt fastq-filter {input.mapped_ids} |
+        pigz -p {threads} - > {output.reads} 2> {log}
         '''
 
 # https://github.com/merenlab/anvio/issues/1011
@@ -365,10 +369,10 @@ rule rmhost_anvio_get_unmapped_reads_1:
         8
     shell:
         '''
-        pigz -dc {input.reads} > {output.reads_unzip}
+        pigz -p {threads} -dc {input.reads} > {output.reads_unzip}
         iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.mapped_ids} -d "{params.delimiter}" 2> {log}
-        pigz {output.survived}
-        pigz {output.removed}
+        pigz -p {threads} {output.survived}
+        pigz -p {threads} {output.removed}
         mv {output.survived} {output.reads}
         mv {output.removed} {output.reads_host}
         '''
@@ -391,10 +395,10 @@ rule rmhost_anvio_get_unmapped_reads_2:
         8
     shell:
         '''
-        pigz -dc {input.reads} > {output.reads_unzip}
+        pigz -p {threads} -dc {input.reads} > {output.reads_unzip}
         iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.mapped_ids} -d "{params.delimiter}" 2> {log}
-        pigz {output.survived}
-        pigz {output.removed}
+        pigz -p {threads} {output.survived}
+        pigz -p {threads} {output.removed}
         mv {output.survived} {output.reads}
         mv {output.removed} {output.reads_host}
         '''
@@ -404,10 +408,12 @@ rule rmhost_reads_count:
         os.path.join("results", "{sample}.{mapper}.rmhost.1.fq.gz"),
     output:
         os.path.join("results", "{sample}.{mapper}.rmhost.reads.count.txt")
+    threads:
+        8
     shell:
         '''
         echo "reads_count" > {output}
-        zcat {input} | wc -l | xargs -I xxx expr xxx / 4 >> {output}
+        pigz -p {threads} -dc {input} | wc -l | xargs -I xxx expr xxx / 4 >> {output}
         '''
 
 def change(table, mapper_, sample_):
