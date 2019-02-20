@@ -1,9 +1,9 @@
 #!/usr/bin/env snakemake
 from snakemake.utils import min_version
 import pysam
-import subprocess
 import os
 import pandas as pd
+from pprint import pprint
 
 min_version("5.0")
 
@@ -14,6 +14,10 @@ HG38FULL_BWA_INDEX_PREFIX     = "/ldfssz1/ST_META/share/User/zhujie/database/gal
 HG38FULL_BBMAP_INDEX_FA       = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bbmap_index/hg38full.fa"
 HG38FULL_BOWTIE2_INDEX_PREFIX = "/ldfssz1/ST_META/share/User/zhujie/database/galaxy_indexes/hg38/hg38full/bowtie2_index/hg38full"
 
+def parse_samples(samples_tsv):
+    return pd.read_csv(samples_tsv, sep='\s+').set_index('id', drop=False).to_dict(orient='index')
+
+'''
 SAMPLES = {
     "gy450g.1w" : {
         "r1": "data/gy450g.1w.fp.1.fq.gz",
@@ -40,6 +44,11 @@ SAMPLES = {
         "r2": "data/RSZYD18093181_A_togue.862w.fp.2.fq.gz"
     }
 }
+'''
+
+SAMPLES = parse_samples("samples.tsv")
+pprint(SAMPLES)
+
 
 MAPPER = ["gyl_soap", "metapi_bwa_f12F256", "metapi_bwa_f4", "atlas_bbmap", "sunbeam_bwa", "anvio_bowtie2"]
 
@@ -433,8 +442,9 @@ rule merge_benchmark:
     run:
         df = pd.DataFrame()
         for benchmark in input:
-            mapper_ = os.path.basename(benchmark).split('.')[2]
-            sample_ = ".".join(os.path.basename(benchmark).split('.')[0:2])
+            sample_ = os.path.basename(benchmark).split('.')[0]
+            mapper_ = os.path.basename(benchmark).split('.')[1]
+
 
             df_ = change(benchmark, mapper_, sample_)
             df = pandas.concat([df, df_])
@@ -452,8 +462,8 @@ rule merge_rmhost_reads_count:
         df = pandas.DataFrame()
 
         for reads_count in input:
-            mapper_ = os.path.basename(reads_count).split('.')[2]
-            sample_ = ".".join(os.path.basename(reads_count).split('.')[0:2])
+            sample_ = os.path.basename(benchmark).split('.')[0]
+            mapper_ = os.path.basename(benchmark).split('.')[1]
 
             df_ = change(reads_count, mapper_, sample_)
             df = pandas.concat([df, df_])
