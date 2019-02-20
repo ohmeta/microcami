@@ -338,7 +338,7 @@ rule rmhost_anvio_bowtie2:
         host_index_prefix = HG38FULL_BOWTIE2_INDEX_PREFIX,
         additional_params = "--no-unal"
     benchmark:
-        "bechmark/{sample}.anvio_bowtie2.rmhost.benchmark.txt"
+        "benchmark/{sample}.anvio_bowtie2.rmhost.benchmark.txt"
     log:
        "logs/{sample}.anvio_bowtie2.rmhost.log"
     threads:
