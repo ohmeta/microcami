@@ -46,7 +46,10 @@ MAPPER = ["gyl_soap", "metapi_bwa_f12F256", "metapi_bwa_f4", "atlas_bbmap", "sun
 rule all:
     input:
         expand([os.path.join("results", "{sample}.{mapper}.rmhost.{read}.fq.gz"),
-                os.path.join("results", "{sample}.sunbeam_bwa.host.F4.sorted.bam"),
+                os.path.join("results", "{sample}.sunbeam_bwa_F4.hg38full.sorted.bam"),
+                os.path.join("results", "{sample}.metapi_bwa_f4.hg38full.sorted.bam"),
+                os.path.join("results", "{sample}.metapi_bwa_f12F256.hg38full.sorted.bam"),
+                os.path.join("results", "{sample}.anvio_bowtie2_no-unal_F4.hg38full.sorted.bam"),
                 os.path.join("results", "{sample}.sunbeam_bwa.flagstat.txt"),
                 os.path.join("results", "{sample}.sunbeam_bwa.bamstats.txt"),
                 os.path.join("results", "{sample}.{mapper}.rmhost.reads.count.txt"),
@@ -216,7 +219,7 @@ rule rmhost_sunbeam_bwa:
                        prefix=HG38FULL_BWA_INDEX_PREFIX,
                        suffix=["amb", "ann", "bwt", "pac", "sa"])
     output:
-        bam = os.path.join("results", "{sample}.sunbeam_bwa_F4.sorted.bam"),
+        bam = os.path.join("results", "{sample}.sunbeam_bwa_F4.hg38full.sorted.bam"),
         flagstat = os.path.join("results", "{sample}.sunbeam_bwa.flagstat.txt"),
         bamstats = os.path.join("results", "{sample}.sunbeam_bwa.bamstats.txt")
     benchmark:
@@ -267,7 +270,7 @@ def _get_frac(read):
 
 rule sunbeam_get_mapped_reads:
     input:
-        bam = os.path.join("results", "{sample}.sunbeam_bwa_F4.sorted.bam")
+        bam = os.path.join("results", "{sample}.sunbeam_bwa_F4.hg38full.sorted.bam")
     output:
         mapped_ids = os.path.join("results", "{sample}.sunbeam_bwa.mapped.ids")
     params:
@@ -286,39 +289,31 @@ rule sunbeam_get_mapped_reads:
 rule rmhost_sunbeam_get_unmapped_reads_1:
     input:
         mapped_ids = os.path.join("results", "{sample}.sunbeam_bwa.mapped.ids"),
-        r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"]
+        reads = lambda wildcards: SAMPLES[wildcards.sample]["r1"]
     output:
-        r1 = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.1.fq.gz"),
-        stats = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.stats")
+        reads = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.1.fq.gz"),
     log:
         "logs/{sample}.sunbeam_filter_r1.rmhost.log"
-    run:
-        original = int(str(subprocess.getoutput("zcat {} | wc -l".format(input.r1))).strip()) // 4
-        host = int(subprocess.getoutput("cat {} | wc -l".format(input.mapped_ids)).strip())
-        nonhost = int(original - host)
-        shell(
-            '''
-            gzip -dc {input.r1} |
-            rbt fastq-filter {input.mapped_ids} |
-            gzip > {output.r1} 2> {log}
-            ''')
-        with open(output.stats, 'w') as stats_handle:
-            stats_handle.write("{}\n".format("\t".join([str(host), str(nonhost)])))
-
+    shell:
+        '''
+        gzip -dc {input.reads} |
+        rbt fastq-filter {input.mapped_ids} |
+        gzip > {output.reads} 2> {log}
+        '''
 
 rule rmhost_sunbeam_get_unmapped_reads_2:
     input:
         mapped_ids = os.path.join("results", "{sample}.sunbeam_bwa.mapped.ids"),
-        r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"]
+        reads = lambda wildcards: SAMPLES[wildcards.sample]["r2"]
     output:
-        r2 = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.2.fq.gz")
+        reads = os.path.join("results", "{sample}.sunbeam_bwa.rmhost.2.fq.gz")
     log:
         "logs/{sample}.sunbeam_filter_r2.rmhost.log"
     shell:
         '''
-        gzip -dc {input.r2} | \
+        gzip -dc {input.reads} | \
         rbt fastq-filter {input.mapped_ids} | \
-        gzip > {output.r2} 2> {log}
+        gzip > {output.reads} 2> {log}
         '''
 
 # https://github.com/merenlab/anvio/issues/1011
@@ -331,8 +326,8 @@ rule rmhost_anvio_bowtie2:
         r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"]
     output:
-        bam = os.path.join("results", "{sample}.anvio_bowtie2_no-unal_F4.sorted.bam"),
-        bai = os.path.join("results", "{sample}.anvio_bowtie2_no-unal_F4.sorted.bam.bai"),
+        bam = os.path.join("results", "{sample}.anvio_bowtie2_no-unal_F4.hg38full.sorted.bam"),
+        bai = os.path.join("results", "{sample}.anvio_bowtie2_no-unal_F4.hg38full.sorted.bam.bai"),
         mapped_ids = os.path.join("results", "{sample}.anvio_bowtie2.mapped.ids")
     params:
         host_index_prefix = HG38FULL_BOWTIE2_INDEX_PREFIX,
