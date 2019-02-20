@@ -353,7 +353,7 @@ rule rmhost_anvio_get_unmapped_reads_1:
         mapped_ids = os.path.join("results", "{sample}.anvio_bowtie2.mapped.ids")
     output:
         reads = os.path.join("results", "{sample}.anvio_bowtie2.rmhost.1.fq.gz"),
-        reas_host = os.path.join("results", "{sample}.anvio_bowtie2.host.1.fq.gz"),
+        reads_host = os.path.join("results", "{sample}.anvio_bowtie2.host.1.fq.gz"),
         reads_unzip = temp(os.path.join("results", "{sample}.anvio_bowtie2.unzip.1.fq")),
         survived = temp(os.path.join("results", "{sample}.anvio_bowtie2.unzip.1.fq.survived")),
         removed = temp(os.path.join("results", "{sample}.anvio_bowtie2.unzip.1.fq.removed"))
@@ -379,7 +379,7 @@ rule rmhost_anvio_get_unmapped_reads_2:
         mapped_ids = os.path.join("results", "{sample}.anvio_bowtie2.mapped.ids")
     output:
         reads = os.path.join("results", "{sample}.anvio_bowtie2.rmhost.2.fq.gz"),
-        reas_host = os.path.join("results", "{sample}.anvio_bowtie2.host.2.fq.gz"),
+        reads_host = os.path.join("results", "{sample}.anvio_bowtie2.host.2.fq.gz"),
         reads_unzip = temp(os.path.join("results", "{sample}.anvio_bowtie2.unzip.2.fq")),
         survived = temp(os.path.join("results", "{sample}.anvio_bowtie2.unzip.2.fq.survived")),
         removed = temp(os.path.join("results", "{sample}.anvio_bowtie2.unzip.2.fq.removed"))
