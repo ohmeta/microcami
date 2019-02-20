@@ -123,8 +123,8 @@ rule rmhost_metapi_bwa_f12F256:
         flagstat = os.path.join("results", "{sample}.metapi_bwa_f12F256.flagstat.txt"),
         bamstats = os.path.join("results", "{sample}.metapi_bwa_f12F256.bamstats.txt"),
         bam = os.path.join("results", "{sample}.metapi_bwa_f12F256.hg38full.sorted.bam"),
-        r1 = os.path.join("results", "{sample}.metapi.bwa.f12F256.rmhost.1.fq.gz"),
-        r2 = os.path.join("results", "{sample}.metapi.bwa.f12F256.rmhost.2.fq.gz")
+        r1 = os.path.join("results", "{sample}.metapi_bwa_f12F256.rmhost.1.fq.gz"),
+        r2 = os.path.join("results", "{sample}.metapi_bwa_f12F256.rmhost.2.fq.gz")
     log:
         "logs/{sample}.metapi_bwa_f12F256.rmhost.log"
     params:
