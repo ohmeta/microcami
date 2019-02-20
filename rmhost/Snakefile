@@ -424,7 +424,7 @@ def change(table, mapper_, sample_):
 
 rule merge_benchmark:
     input:
-        expand("benchmarks/{sample}.{mapper}.rmhost.benchmark.txt",
+        expand(os.path.join("benchmark", "{sample}.{mapper}.rmhost.benchmark.txt"),
                sample=SAMPLES,
                mapper=MAPPER)
     output:
