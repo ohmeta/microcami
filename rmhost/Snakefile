@@ -196,7 +196,7 @@ rule rmhost_metapi_bwa_idfilter:
         tee >(samtools stats -@{threads} - > {output.bamstats}) |
         tee >(samtools sort -b -@{threads} - -o {output.bam} 2> {log}) |
         awk -v maxpct={params.identity} -v OFS='\t' -v FS='\t' \
-        '{ \
+        '{{ \
            if ($0 ~ /^@/) {print $0} \
            else \
            { \
@@ -205,7 +205,7 @@ rule rmhost_metapi_bwa_idfilter:
              pct=nm/length($10); \
              if (pct < maxpct) {print $0, "XP:f:"pct} \
            } \
-        }' |
+        }}' |
         samtools fastq -@{threads} -f 12 -F 256 -1 {output.r1} -2 {output.r2} -
         '''
 
