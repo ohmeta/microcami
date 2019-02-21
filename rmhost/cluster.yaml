@@ -23,6 +23,12 @@ rmhost_metapi_bwa_f12F256:
   output: "cluster_logs/{rule}.{wildcards.sample}.o"
   error:  "cluster_logs/{rule}.{wildcards.sample}.e"
 
+rmhost_metapi_bwa_idfilter:
+  mem: "4G"
+  cores: 8
+  output: "cluster_logs/{rule}.{wildcards.sample}.o"
+  error:  "cluster_logs/{rule}.{wildcards.sample}.e"
+
 bbmap_index_host_db:
   mem: "28G"
   cores: 8

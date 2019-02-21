@@ -58,6 +58,7 @@ rule all:
                 os.path.join("results", "{sample}.sunbeam_bwa_F4.hg38full.sorted.bam"),
                 os.path.join("results", "{sample}.metapi_bwa_f4.hg38full.sorted.bam"),
                 os.path.join("results", "{sample}.metapi_bwa_f12F256.hg38full.sorted.bam"),
+                os.path.join("results", "{sample}.metapi_bwa_idfilter.hg38full.sorted.bam"),
                 os.path.join("results", "{sample}.anvio_bowtie2_no-unal_F4.hg38full.sorted.bam"),
                 os.path.join("results", "{sample}.sunbeam_bwa.flagstat.txt"),
                 os.path.join("results", "{sample}.sunbeam_bwa.bamstats.txt"),
@@ -93,7 +94,6 @@ rule rmhost_gyl_soap:
         perl bin/rmhost.pl -a {input.r1} -b {input.r2} \
         -d {params.index_prefix} -q 1 -p {params.output_prefix} -t {threads} 2> {log}
         '''
-
 
 # http://seqanswers.com/forums/showthread.php?t=3342
 # bwa mem
