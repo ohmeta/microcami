@@ -47,7 +47,7 @@ rmhost_sunbeam_bwa:
   output: "cluster_logs/{rule}.{wildcards.sample}.o"
   error:  "cluster_logs/{rule}.{wildcards.sample}.e"
 
-rmhost_sun_get_mapped_reads_id:
+rmhost_sunbeam_get_mapped_reads_id:
   mem: "4G"
   cores: 1
   output: "cluster_logs/{rule}.{wildcards.sample}.o"
