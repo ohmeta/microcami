@@ -333,7 +333,7 @@ def _get_frac(read):
     frac = float(read.query_alignment_length)/(read.query_alignment_length + clip)
     return frac
 
-rule sunbeam_get_mapped_reads_id:
+rule rmhost_sunbeam_get_mapped_reads_id:
     input:
         bam = os.path.join("results", "{sample}.sunbeam_bwa_F4.hg38full.sorted.bam")
     output:
