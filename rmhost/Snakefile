@@ -438,8 +438,8 @@ rule rmhost_anvio_get_unmapped_reads_1:
         iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.mapped_ids} -d "{params.delimiter}" 2> {log}
         pigz -p {threads} {output.survived}
         pigz -p {threads} {output.removed}
-        mv {output.survived} {output.reads}
-        mv {output.removed} {output.reads_host}
+        mv {output.survived}.gz {output.reads}
+        mv {output.removed}.gz {output.reads_host}
         '''
 
 rule rmhost_anvio_get_unmapped_reads_2:
@@ -464,8 +464,8 @@ rule rmhost_anvio_get_unmapped_reads_2:
         iu-remove-ids-from-fastq -i {output.reads_unzip} -l {input.mapped_ids} -d "{params.delimiter}" 2> {log}
         pigz -p {threads} {output.survived}
         pigz -p {threads} {output.removed}
-        mv {output.survived} {output.reads}
-        mv {output.removed} {output.reads_host}
+        mv {output.survived}.gz {output.reads}
+        mv {output.removed}.gz {output.reads_host}
         '''
 
 rule rmhost_reads_count:
