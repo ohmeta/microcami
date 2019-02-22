@@ -133,7 +133,7 @@ rule rmhost_metapi_bwa_f4:
         tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
         tee >(samtools stats -@{threads} - > {output.bamstats}) |
         tee >(samtools fastq -@{threads} -f 4 -1 {output.r1} -2 {output.r2} -) |
-        samtools sort -b -@{threads} - -o {output.bam} 2> {log}
+        samtools sort -@{threads} - -O BAM -o {output.bam} 2> {log}
         '''
 
 rule rmhost_metapi_bwa_f12F256:
@@ -163,7 +163,7 @@ rule rmhost_metapi_bwa_f12F256:
         tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
         tee >(samtools stats -@{threads} - > {output.bamstats}) |
         tee >(samtools fastq -@{threads} -f 12 -F 256 -1 {output.r1} -2 {output.r2} -) |
-        samtools sort -b -@{threads} - -o {output.bam} 2> {log}
+        samtools sort -@{threads} - -O BAM -o {output.bam} 2> {log}
         '''
 
 # http://seqanswers.com/forums/showthread.php?t=58473
@@ -194,7 +194,7 @@ rule rmhost_metapi_bwa_idfilter:
         bwa mem -t {threads} {params.index_prefix} {input.r1} {input.r2} |
         tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
         tee >(samtools stats -@{threads} - > {output.bamstats}) |
-        tee >(samtools sort -b -@{threads} - -o {output.bam} 2> {log}) |
+        tee >(samtools sort -@{threads} -O BAM - -o {output.bam} 2> {log}) |
         awk -v maxpct={params.identity} -v OFS='\t' -v FS='\t' \
         '{{ \
            if ($0 ~ /^@/) {{print $0}} \
@@ -301,7 +301,7 @@ rule rmhost_sunbeam_bwa:
         tee >(samtools flagstat -@{threads} - > {output.flagstat}) |
         tee >(samtools stats -@{threads} - > {output.bamstats}) |
         samtools view -@{threads} -hSF4 - |
-        samtools sort -b -@{threads} -o {output.bam} - 2> {log}
+        samtools sort -@{threads} -O BAM -o {output.bam} - 2> {log}
         '''
 
 # https://github.com/sunbeam-labs/sunbeam/blob/dev/sunbeamlib/decontam.py
@@ -411,7 +411,7 @@ rule rmhost_anvio_bowtie2:
         '''
         bowtie2 --threads {threads} -x {params.host_index_prefix} -1 {input.r1} -2 {input.r2} {params.additional_params} |
         samtools view -@{threads} -hSF4 - |
-        samtools sort -b -@{threads} -o {output.bam} - 2> {log}
+        samtools sort -@{threads} -O BAM -o {output.bam} - 2> {log}
         samtools index -@{threads} {output.bam}
         samtools view {output.bam} | cut -f 1 | sort | uniq > {output.mapped_ids}
         '''
