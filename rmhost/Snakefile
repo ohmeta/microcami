@@ -468,9 +468,9 @@ rule merge_rmhost_reads_count:
                sample=SAMPLES,
                mapper=MAPPER)
     output:
-        rmhost_reads_cout = os.path.join("results", "rmhost.reads.count.tsv")
+        rmhost_reads_count = os.path.join("results", "rmhost.reads.count.tsv")
     run:
-        df = pa.DataFrame()
+        df = pd.DataFrame()
 
         for reads_count in input:
             sample_ = os.path.basename(reads_count).split('.')[0]
