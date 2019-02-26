@@ -1,9 +1,8 @@
 #!/usr/bin/env snakemake
 from snakemake.utils import min_version
-import pysam
+
 import os
 import pandas as pd
-from pprint import pprint
 
 min_version("5.0")
 
@@ -35,5 +34,5 @@ rule rmhost_anvio_bowtie2:
     shell:
         '''
         bowtie2 --threads {threads} -x {params.host_index_prefix} -1 {input.r1} -2 {input.r2} {params.additional_params} |
-        samtools view -@{threads} -SF4 - | cut -f 1 | sort | uniq > {output.mapped_ids}
+        samtools view -@{threads} -SF4 - | awk '{print $1}' | sort | uniq > {output.mapped_ids}
         '''
