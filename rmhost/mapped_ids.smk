@@ -16,7 +16,7 @@ MAPPERS = ["anvio_bowtie2"]
 
 rule all:
     input:
-        expand(os.path.join("results", "{sample}.{mapper}.rmhost.mapped.ids"),
+        expand(os.path.join("results", "{sample}.{mapper}.mapped.ids"),
                sample=SAMPLES,
                mapper=MAPPERS)
 
@@ -25,7 +25,7 @@ rule rmhost_anvio_bowtie2:
         r1 = lambda wildcards: SAMPLES[wildcards.sample]["r1"],
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["r2"]
     output:
-        mapped_ids = os.path.join("results", "{sample}.anvio_bowtie2.rmhost.mapped.ids")
+        mapped_ids = os.path.join("results", "{sample}.anvio_bowtie2.mapped.ids")
     params:
         host_index_prefix = HG38FULL_BOWTIE2_INDEX_PREFIX,
         additional_params = "--no-unal"
