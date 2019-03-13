@@ -45,13 +45,18 @@ see qc.benchmark.txt
    - [prodigal](https://github.com/hyattpd/Prodigal)
 
 ## clustering
-### concept
-   - [MLG]
-   - [MGS]
-   - [mOTU]
-   - [metaOTU]
-### software
-   - [MLG]
+### sequence
+   - [cd-hit](https://github.com/weizhongli/cdhit)
+   - [MMseqs2](https://github.com/soedinglab/MMseqs2)
+
+### species
+#### concept
+   - [MLG](https://www.nature.com/articles/nature11450)
+   - [MGS](https://www.nature.com/articles/nbt.2939)
+   - [mOTU](https://www.nature.com/articles/nmeth.2693)
+   - [metaOTU](https://www.sciencedirect.com/science/article/pii/S1931312815001626)
+#### software
+   - MLG
    - [mgs-canopy](https://bitbucket.org/HeyHo/mgs-canopy-algorithm/wiki/Home)
    - [mOTUs_v2](https://github.com/motu-tool/mOTUs_v2)
    
@@ -66,8 +71,6 @@ see qc.benchmark.txt
    - [centrifuge](https://github.com/infphilo/centrifuge)
 
 ## profilling
-   - soap2_gene_profilling
-   - bwa_gene_profilling
    - [metaphlan2](https://bitbucket.org/biobakery/metaphlan2)
    
 ## annotation
