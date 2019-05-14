@@ -4,7 +4,7 @@ rmhost/ref
 rmhost/cluster_logs
 
 */.ipynb_checkpoints/
-
+.ipynb_checkpoints/
 *.sam
 *.soap
 *.soap.se
@@ -24,3 +24,18 @@ rmhost/cluster_logs
 *log.e
 *log.o
 *.snakemake*
+
+# temp
+alignment/blast/
+alignment/bowtie2/
+assembly/
+binning/
+checkm/
+classification/
+clustering/
+distance/sourmash/
+profiling/
+quality_control/fastqc/
+rmhost/se/
+seqprocess/
+simulation/mason/
