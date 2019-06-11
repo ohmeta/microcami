@@ -1,4 +1,0 @@
-  File "../../../qiime/tests/all_tests.py", line 88
-    print "Testing %s:\n" % unittest_name
-                        ^
-SyntaxError: Missing parentheses in call to 'print'. Did you mean print("Testing %s:\n" % unittest_name)?
