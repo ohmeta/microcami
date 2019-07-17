@@ -1,0 +1,14 @@
+threads: 8
+sam_format: SAM
+identity: 0.95
+fragment: 1200
+output_type: standard
+insert_size: 350
+abundance_script: /ldfssz1/ST_META/share/User/zhujie/toolkit/metapi/scripts/compute_abundance.py
+marker_matrix: /hwfssz1/ST_META/P18Z10200N0127_MA/zhujie/igo/assay/profilling/mp2_oral_db_metadata.tsv
+index_prefix: /hwfssz1/ST_META/P18Z10200N0127_MA/jiezhuye/bin_virsorter/oral_mgs_rep_metaphlan2_db/mpa_v20_m200
+bam: results/bam
+abundance: results/abundance
+depth: results/depth
+logs: "logs"
+benchmark: "benchmark"

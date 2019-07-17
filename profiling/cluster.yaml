@@ -1,0 +1,32 @@
+localrules: all, merge_benchmark
+
+__default__:
+  queue: st.q
+  project: P18Z10200N0127
+  workdir: ./
+  mem: 1G
+  cores: 1
+
+profiling_pipe_sam:
+  mem: 15G
+  cores: 8
+  output: cluster_logs/{rule}.{wildcards.sample}.o
+  error: cluster_logs/{rule}.{wildcards.sample}.e
+
+profiling_pipe_bam:
+  mem: 15G
+  cores: 8
+  output: cluster_logs/{rule}.{wildcards.sample}.o
+  error: cluster_logs/{rule}.{wildcards.sample}.e
+
+profiling_gen_bam:
+  mem: 15G
+  cores: 8
+  output: cluster_logs/{rule}.{wildcards.sample}.o
+  error: cluster_logs/{rule}.{wildcards.sample}.e
+
+profiling_gen_profile:
+  mem: 8G
+  cores: 1
+  output: cluster_logs/{rule}.{wildcards.sample}.o
+  error: cluster_logs/{rule}.{wildcards.sample}.e

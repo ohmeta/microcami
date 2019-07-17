@@ -34,7 +34,7 @@ checkm/
 classification/
 clustering/
 distance/sourmash/
-profiling/
+#profiling/
 quality_control/fastqc/
 rmhost/se/
 seqprocess/

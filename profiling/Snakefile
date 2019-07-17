@@ -1,0 +1,228 @@
+#!/usr/bin/env snakemake
+import pandas as pd
+import os
+from snakemake.utils import min_version
+from pprint import pprint
+min_version("5.0")
+
+config: "config.yaml"
+
+
+def parse_samples(samples_tsv):
+    return pd.read_csv(samples_tsv, sep='\s+').set_index('id', drop=False).to_dict(orient='index')
+
+
+STEPS = ["profiling_pipe_sam", "profiling_pipe_bam", "gen_bam", "gen_profile"]
+SAMPLES = parse_samples("samples.tsv")
+
+#pprint(SAMPLES)
+#pprint(config)
+
+os.makedirs("cluster_logs", exist_ok=True)
+
+rule all:
+    input:
+        expand([os.path.join(config["abundance"], "{sample}.{suffix}.abundance"),
+                os.path.join(config["depth"], "{sample}.{suffix}.depth"),
+                os.path.join(config["benchmark"], "profiling.benchmark.tsv")],
+                suffix=["sam", "bam", "bam2"],
+                sample=SAMPLES)
+
+
+rule profiling_pipe_sam:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["fq1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["fq2"],
+        marker_matrix = config["marker_matrix"],
+        index_prefix = expand("{prefix}.{suffix}",
+                              prefix=config["index_prefix"],
+                              suffix=["1.bt2l", "2.bt2l", "3.bt2l", "4.bt2l", "rev.1.bt2l", "rev.2.bt2l"])
+    output:
+        abundance= os.path.join(config["abundance"], "{sample}.sam.abundance"),
+        depth = os.path.join(config["depth"], "{sample}.sam.depth")
+    log:
+        os.path.join(config["logs"], "{sample}.profiling_pipe_sam.log")
+    benchmark:
+        os.path.join(config["benchmark"], "{sample}.profiling_pipe_sam.benchmark")
+    threads:
+        config["threads"]
+    params:
+        sample = "{sample}.sam",
+        index_prefix = config["index_prefix"],
+        sam_format = "SAM",
+        identity = config["identity"],
+        fragment = config["fragment"],
+        output_type = config["output_type"],
+        insert_size = config["insert_size"],
+        abundance_script = config["abundance_script"],
+        abundance_outdir = config["abundance"],
+        samtools_sort_prefix = os.path.join(config["abundance"], "{sample}.sam.temp")
+    shell:
+        '''
+        bowtie2 -x {params.index_prefix} -1 {input.r1} -2 {input.r2} \
+        --end-to-end --very-sensitive --phred33 --threads {threads} \
+        --seed 0 --time -k 2 --no-unal --no-discordant \
+        -X {params.fragment} 2> {log} | \
+        samtools sort -@{threads} -T {params.samtools_sort_prefix} -O {params.sam_format} - | \
+        tee >(python {params.abundance_script} \
+        --sample-name {params.sample} \
+        --sam-file - \
+        --sam-format {params.sam_format} \
+        --insert-size {params.insert_size} \
+        --marker-matrix {input.marker_matrix} \
+        --outdir {params.abundance_outdir} \
+        --identity {params.identity} \
+        --output-type {params.output_type}) | \
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} -
+
+        echo "profiling done" >> {log}
+        '''
+
+
+rule profiling_pipe_bam:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["fq1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["fq2"],
+        marker_matrix = config["marker_matrix"],
+        index_prefix = expand("{prefix}.{suffix}",
+                              prefix=config["index_prefix"],
+                              suffix=["1.bt2l", "2.bt2l", "3.bt2l", "4.bt2l", "rev.1.bt2l", "rev.2.bt2l"])
+    output:
+        abundance= os.path.join(config["abundance"], "{sample}.bam.abundance"),
+        depth = os.path.join(config["depth"], "{sample}.bam.depth")
+    log:
+        os.path.join(config["logs"], "{sample}.profiling_pipe_bam.log")
+    benchmark:
+        os.path.join(config["benchmark"], "{sample}.profiling_pipe_bam.benchmark")
+    threads:
+        config["threads"]
+    params:
+        sample = "{sample}.bam",
+        index_prefix = config["index_prefix"],
+        sam_format = "BAM",
+        identity = config["identity"],
+        fragment = config["fragment"],
+        output_type = config["output_type"],
+        insert_size = config["insert_size"],
+        abundance_script = config["abundance_script"],
+        abundance_outdir = config["abundance"],
+        samtools_sort_prefix = os.path.join(config["abundance"], "{sample}.bam.temp")
+    shell:
+        '''
+        bowtie2 -x {params.index_prefix} -1 {input.r1} -2 {input.r2} \
+        --end-to-end --very-sensitive --phred33 --threads {threads} \
+        --seed 0 --time -k 2 --no-unal --no-discordant \
+        -X {params.fragment} 2> {log} | \
+        samtools sort -@{threads} -T {params.samtools_sort_prefix} -O {params.sam_format} - | \
+        tee >(python {params.abundance_script} \
+        --sample-name {params.sample} \
+        --sam-file - \
+        --sam-format {params.sam_format} \
+        --insert-size {params.insert_size} \
+        --marker-matrix {input.marker_matrix} \
+        --outdir {params.abundance_outdir} \
+        --identity {params.identity} \
+        --output-type {params.output_type}) | \
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} -
+
+        echo "profilling done" >> {log}
+        '''
+
+
+rule profiling_gen_bam:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["fq1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["fq2"],
+        index_prefix = expand("{prefix}.{suffix}",
+                              prefix=config["index_prefix"],
+                              suffix=["1.bt2l", "2.bt2l", "3.bt2l", "4.bt2l", "rev.1.bt2l", "rev.2.bt2l"])
+    output:
+        bam = os.path.join(config["bam"], "{sample}.sorted.bam")
+    log:
+        os.path.join(config["logs"], "{sample}.gen_bam.log")
+    benchmark:
+        os.path.join(config["benchmark"], "{sample}.gen_bam.benchmark")
+    threads:
+        config["threads"]
+    params:
+        index_prefix = config["index_prefix"],
+        sam_format = "BAM",
+        fragment = config["fragment"],
+        samtools_sort_prefix = os.path.join(config["bam"], "{sample}.gen_bam.temp")
+    shell:
+        '''
+        bowtie2 -x {params.index_prefix} -1 {input.r1} -2 {input.r2} \
+        --end-to-end --very-sensitive --phred33 --threads {threads} \
+        --seed 0 --time -k 2 --no-unal --no-discordant \
+        -X {params.fragment} 2> {log} | \
+        samtools sort -@{threads} -T {params.samtools_sort_prefix} -O {params.sam_format} - -o {output.bam}
+        '''
+
+
+rule profiling_gen_profile:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["fq1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["fq2"],
+        marker_matrix = config["marker_matrix"],
+        bam = os.path.join(config["bam"], "{sample}.sorted.bam")
+    output:
+        abundance= os.path.join(config["abundance"], "{sample}.bam2.abundance"),
+        depth = os.path.join(config["depth"], "{sample}.bam2.depth")
+    log:
+        os.path.join(config["logs"], "{sample}.gen_profile.log")
+    benchmark:
+        os.path.join(config["benchmark"], "{sample}.gen_profile.benchmark")
+    threads:
+        config["threads"]
+    params:
+        sample = "{sample}.bam2",
+        sam_format = "BAM",
+        identity = config["identity"],
+        output_type = config["output_type"],
+        insert_size = config["insert_size"],
+        abundance_script = config["abundance_script"],
+        abundance_outdir = config["abundance"],
+    shell:
+        '''
+        python {params.abundance_script} \
+        --sample-name {params.sample} \
+        --sam-file {input.bam} \
+        --sam-format {params.sam_format} \
+        --insert-size {params.insert_size} \
+        --marker-matrix {input.marker_matrix} \
+        --outdir {params.abundance_outdir} \
+        --identity {params.identity} \
+        --output-type {params.output_type})
+
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam}
+
+        echo "profilling done" > {log}
+        '''
+
+
+def change(table, df1, df2, col1, col2):
+    df = pd.DataFrame()
+    df = pd.read_csv(table, sep='\s+')
+    df.insert(loc=0, column=col1, value=[df1])
+    df.insert(loc=0, column=col2, value=[df2])
+    return df
+
+
+rule merge_benchmark:
+    input:
+        expand(os.path.join("benchmark", "{sample}.{step}.benchmark"),
+               sample=SAMPLES,
+               step=STEPS)
+    output:
+        profiling_benchmark = os.path.join("benchmark", "profiling.benchmark.tsv")
+    run:
+        df = pd.DataFrame()
+        for benchmark in input:
+            sample_ = os.path.basename(benchmark).split('.')[0]
+            step_ = os.path.basename(benchmark).split('.')[1]
+
+
+            df_ = change(benchmark, step_, sample_, "step", "sample")
+            df = pd.concat([df, df_])
+
+        df.to_csv(output.profiling_benchmark, sep='\t', index=False)
