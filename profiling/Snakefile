@@ -192,7 +192,7 @@ rule profiling_gen_profile:
         --marker-matrix {input.marker_matrix} \
         --outdir {params.abundance_outdir} \
         --identity {params.identity} \
-        --output-type {params.output_type})
+        --output-type {params.output_type}
 
         jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam}
 
