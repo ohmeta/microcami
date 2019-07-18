@@ -12,7 +12,7 @@ def parse_samples(samples_tsv):
     return pd.read_csv(samples_tsv, sep='\s+').set_index('id', drop=False).to_dict(orient='index')
 
 
-STEPS = ["profiling_pipe_sam", "profiling_pipe_bam", "gen_bam", "gen_profile"]
+STEPS = ["profiling_pipe_sam", "profiling_pipe_bam", "gen_bam", "gen_profile", "gen_profile_no_reads_id"]
 SAMPLES = parse_samples("samples.tsv")
 
 #pprint(SAMPLES)
@@ -25,7 +25,7 @@ rule all:
         expand([os.path.join(config["abundance"], "{sample}.{suffix}.abundance"),
                 os.path.join(config["depth"], "{sample}.{suffix}.depth"),
                 os.path.join(config["benchmark"], "profiling.benchmark.tsv")],
-                suffix=["sam", "bam", "bam2"],
+                suffix=["sam", "bam", "bam2", "bam3"],
                 sample=SAMPLES)
 
 
@@ -199,6 +199,46 @@ rule profiling_gen_profile:
         echo "profilling done" > {log}
         '''
 
+
+rule profiling_gen_profile_no_reads_id:
+    input:
+        r1 = lambda wildcards: SAMPLES[wildcards.sample]["fq1"],
+        r2 = lambda wildcards: SAMPLES[wildcards.sample]["fq2"],
+        marker_matrix = config["marker_matrix"],
+        bam = os.path.join(config["bam"], "{sample}.sorted.bam")
+    output:
+        abundance= os.path.join(config["abundance"], "{sample}.bam3.abundance"),
+        depth = os.path.join(config["depth"], "{sample}.bam3.depth")
+    log:
+        os.path.join(config["logs"], "{sample}.gen_profile_no_reads_id.log")
+    benchmark:
+        os.path.join(config["benchmark"], "{sample}.gen_profile_no_reads_id.benchmark")
+    threads:
+        config["threads"]
+    params:
+        sample = "{sample}.bam3",
+        sam_format = "BAM",
+        identity = config["identity"],
+        output_type = config["output_type"],
+        insert_size = config["insert_size"],
+        abundance_script_2 = config["abundance_script_no_reads_id"],
+        abundance_outdir = config["abundance"],
+    shell:
+        '''
+        python {params.abundance_script_2} \
+        --sample-name {params.sample} \
+        --sam-file {input.bam} \
+        --sam-format {params.sam_format} \
+        --insert-size {params.insert_size} \
+        --marker-matrix {input.marker_matrix} \
+        --outdir {params.abundance_outdir} \
+        --identity {params.identity} \
+        --output-type {params.output_type}
+
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam}
+
+        echo "profilling done" > {log}
+        '''
 
 def change(table, df1, df2, col1, col2):
     df = pd.DataFrame()

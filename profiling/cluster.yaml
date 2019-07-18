@@ -4,7 +4,7 @@ __default__:
   queue: st.q
   project: P18Z10200N0127
   workdir: ./
-  mem: 1G
+  mem: 128M
   cores: 1
 
 profiling_pipe_sam:
@@ -30,3 +30,15 @@ profiling_gen_profile:
   cores: 1
   output: cluster_logs/{rule}.{wildcards.sample}.o
   error: cluster_logs/{rule}.{wildcards.sample}.e
+
+profiling_gen_profile_no_reads_id:
+  mem: 8G
+  cores: 1
+  output: cluster_logs/{rule}.{wildcards.sample}.o
+  error: cluster_logs/{rule}.{wildcards.sample}.e
+
+merge_benchmark:
+  mem: 128M
+  cores: 1
+  output: cluster_logs/{rule}.o
+  error: cluster_logs/{rule}.e
