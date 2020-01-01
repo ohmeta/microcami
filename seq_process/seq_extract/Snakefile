@@ -1,0 +1,53 @@
+rule all:
+    input:
+        "results/benchmark.txt"
+
+
+rule seqtk:
+    input:
+        r1 = "data/R1.fq.gz",
+        r2 = "data/R2.fq.gz"
+    output:
+        r1 = temp("results/R1.seqtk.fq"),
+        r2 = temp("results/R2.seqtk.fq")
+    benchmark:
+        "results/seqtk.subseq.benchmark.txt"
+    shell:
+        '''
+        seqtk subseq {input.r1} > {output.r1}
+        seqtk subseq {input.r2} > {output.r2}
+        '''
+
+
+rule seqkit:
+    input:
+        r1 = "data/R1.fq",
+        r2 = "data/R2.fq"
+    output:
+        r1 = temp("results/R1.seqkit.fq")
+        r2 = temp("results/R2.seqkit.fq")
+    benchmark:
+        "results/seqkit.benchmark.txt"
+    shell:
+        '''
+        '''
+
+
+rule merge:
+    input:
+        soap = "results/soap.benchmark.txt",
+        bwa = "results/bwa.benchmark.txt"
+    output:
+        alignment = "results/alignment.benchmark.txt"
+    run:
+        import pandas
+
+        def change(benchmark, method):
+            df = pandas.read_table(benchmark)
+            df.insert(loc=0, column='aligner', value=[method])
+            return df
+
+        soap_df = change(input.soap, "soap")
+        bwa_df = change(input.bwa, "bwa")
+        output_df = pandas.concat([soap_df, bwa_df])
+        output_df.to_csv(output.alignment, sep='\t', index=False)
